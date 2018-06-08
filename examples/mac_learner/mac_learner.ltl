@@ -1,0 +1,4 @@
+G(infect -> X G (infected))
+G(!infected -> packet_out)
+G(infected ->  ((src_ip=1 | src_ip=2)-> dst_ip=3 && packet_out))
+G(infected -> (!(src_ip= | src_ip=2) -> !packet_out))
