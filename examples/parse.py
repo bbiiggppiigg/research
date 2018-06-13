@@ -8,6 +8,9 @@ import sys
 import copy
 inputs = list()
 outputs = list()
+
+
+
 def getAllStage(stage_num,jxb_set_list):
     set_list = copy.deepcopy(jxb_set_list)
     ret = set()
@@ -50,6 +53,8 @@ def getStage(jxb_list):
     return currentStages
 
 
+aggr_cond = dict()
+
 def interpret():
     def aggr_ints(ll):
         return True
@@ -80,10 +85,10 @@ def interpret():
     currstage = list()
     #currstate = list()
     
-    print stack
+    #print stack
     for node in stack:
         label = id_var_map[labeling[abs(node)]]
-        print node,labeling[abs(node)]
+        #print node,labeling[abs(node)]
         if(node<0):
             label = "~"+label
         if(isprime(label)):
@@ -101,11 +106,31 @@ def interpret():
     currentCond = getStage(currstage)
     #print currstage,nextstage
     #print currstate
+    
     ci,co,cs = split_vars(current)
     oi,oo,os = split_vars(onestep)
-    print "Under condition " + " or ".join(map(lambda x: str(x),list(currentCond))) 
-    print "Input : "+ " ".join(ci)+", Output : "+" ".join(co) +" => "
-    print "Input : "+ " ".join(oi)+", Output : "+" ".join(oo)
+    """
+    if(len(cs)!=0):
+        print "QQ",cs
+        exit(-1)
+    """
+    if(len(os)!=0):
+        print "QQQ",os
+        print inputs
+        print outputs
+        exit(-1)
+    
+    #print "Under condition " + " or ".join(map(lambda x: str(x),list(currentCond))) 
+    #print "Input : "+ " ".join(ci)+", Output : "+" ".join(co) +" => "
+    #print "Input : "+ " ".join(oi)+", Output : "+" ".join(oo)
+    
+    for cond in currentCond:
+        if (cond,"".join(cs)) not in aggr_cond:
+            aggr_cond[(cond,"".join(cs))]=list()    
+        aggr_cond[(cond,"".join(cs))].append((ci,co,oi,oo))
+
+    # Debug Only
+    """
     if(len(oi)>0):
         print "ya hallo!"
         for inp in oi:
@@ -113,7 +138,11 @@ def interpret():
             if(cp not in ci):
                 print "Buggy!!!! cant find ",cp," in ",ci
                 #exit(-1)
-    print current,"=>",onestep
+    
+    """
+
+    #print current,"=>",onestep
+
     #exit(-1)
 stack = list()
 def dfs(root,complement):
@@ -183,18 +212,23 @@ def init():
                     break
             line = lines[line_it] 
             while(not line.startswith("[OUTPUT]")):
-                #print line.strip()
-                inputs.append(line.strip())
+                
+                ## BUG ##
+                if(line.strip()!=""):
+                    inputs.append(line.strip())
+                
                 line_it+=1
                 line = lines[line_it]
-            
+                #print inputs 
             line_it+=1
             line = lines[line_it]
             while(not line.startswith("[")):
                 #print line.strip().split(":")[0]
-                outputs.append(line.strip().split(":")[0])
+                if(line.strip()!=""):
+                    outputs.append(line.strip().split(":")[0])
                 line_it+=1
                 line = lines[line_it]
+                #print outputs
     global var_id_map
     global id_var_map
     global max_jxb_len
@@ -215,7 +249,7 @@ def init():
             #    nnodes = int(line.strip().split()[1])
             if(line.startswith(".orderedvarnames")):
                 variables = line.strip().split()[1:]
-                print variables 
+                #print variables 
                 for var_id  in range(len(variables)):
                     if '@0.' in variables[var_id]:
                         var_name,min_value,max_value = parse_intnode(variables[var_id])
@@ -262,12 +296,71 @@ def init():
             i+=1
 
 
+def output_result():
+    def parse_clause(clauses):
+        clauses = list(clauses)
+        if clauses == []:
+            #print "QQ"
+            return "True"
+        return  " && ".join(clauses)
+    for inp in inputs:
+        if(inp in intnodes):
+            print "int ",inp,";"
+        else:
+            print "bool " , inp,";"
+    for oup in outputs:
+        if(oup in intnodes):
+            print "int ", oup,";"
+        else:
+            print "bool ", oup,";"
+    state_counter = 0
+    print "switch(state){"
+    
+    for cond in aggr_cond:
+        case_str = "\tcase "+str(state_counter)+": {"
+        goal,strat = cond
+        if("~" in strat):
+            case_str += "//Moving towards goal : #"+str(goal)
+        else:
+            case_str += "//Goal #"+str(goal)+" reached !"
+        print case_str
+        #print len(aggr_cond[cond])
+        aggr_state_cond = dict()
+        
+        for tuples in aggr_cond[cond]:
+            ci,co,oi,oo = tuples
+            if(tuple(co) not in aggr_state_cond):
+                aggr_state_cond[tuple(co)] = list()
+            aggr_state_cond[tuple(co)].append((ci,oi,oo));
+        
+        for state_conds in aggr_state_cond:
+            #print state_conds
+            print "\t\tif ( "+ parse_clause(state_conds)+") {"
+            for tuple3 in aggr_state_cond[state_conds]:
+                print "\t\t\tif ( "+parse_clause(tuple3[0]+tuple3[1])+") {"
+                for assignment in tuple3[2]:
+                    assign_var = assignment[:-1]
+                    if("~" in assign_var):
+                        print "\t\t\t\t",assign_var[1:],"=0";
+                    else:
+                        print "\t\t\t\t",assign_var,"=1";
+                print "\t\t\t}"
+            print "\t\t}"
+
+        
+        state_counter += 1
+        print "\t\tbreak;"
+        print "\t}"
+    print "}"
+
 if __name__=="__main__":
     init()
     #print labeling
     #print id_var_map
     #print var_id_map
     dfs(rootid,1)
+    output_result()
+    
 
 #dfs(rootid,1)
 #print isprime('g')
