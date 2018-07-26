@@ -1,0 +1,14 @@
+[INPUT]
+a
+[OUTPUT]
+b
+
+[ENV_INIT]
+
+[SYS_INIT]
+
+[SYS_TRANS]
+a' -> b'
+
+[ENV_LIVENESS]
+[SYS_LIVENESS]

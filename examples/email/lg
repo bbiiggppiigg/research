@@ -1,0 +1,21 @@
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+char buffer[1000];
+int main(int argc, char * argv []){
+    if ( argc != 2 ){
+        cout << "usage : ./parse <input bdd file name>"<< endl;
+        exit(-1);
+    }
+    FILE * fp = fopen(argv[1],"r");
+    while(fgets(buffer,999,fp)!=NULL){
+        if(buffer[0] == '#')
+            continue;
+        puts(buffer);
+    }
+
+    return 0;
+    }

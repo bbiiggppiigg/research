@@ -7,15 +7,15 @@ zcount:0...3
 ocount:0...3
 
 [ENV_INIT]
-packet_in
+
 
 [SYS_INIT]
 zcount=0
 ocount=0
 
 [SYS_TRANS]
-packet_in & port'=0->(zcount'=zcount+1)
-packet_in & port'=1->(ocount'=ocount+1)
+port=0->(zcount'=zcount+1)
+port=1->(ocount'=ocount+1)
 (zcount=ocount || zcount=(ocount+1) || ocount=zcount || ocount=(zcount+1))
 
 [ENV_LIVENESS]
