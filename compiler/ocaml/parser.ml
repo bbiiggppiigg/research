@@ -6,15 +6,16 @@ let rec parse_primary = parser
     | [< 'Token.Lparen ; e = parse_expr ; 'Token.Rparen >] -> e
     | [< 'Token.Not ; e=parse_negation; >] ->  e
     | [< 'Token.Next ; e = parse_expr; >] ->  Ast.Next(e)
-    | [< 'Token.Ident str ; e = (parse_equal str); >] -> print_endline "find a string, checking assignment" ; e 
+    | [< 'Token.Ident str ; e = (parse_pred str); >] -> print_endline "find a string, checking assignment" ; e 
     | [<>] -> print_endline "end parsing primary"; Ast.Value(Ast.Number(1))
 and parse_negation = parser
     | [<'Token.Lparen ; e = parse_expr ; 'Token.Rparen >] -> Ast.Not(e)
     | [<'Token.Ident str>] -> Ast.Not(Ast.Value(Ast.Bool(str)))
 and print_endline = 
     (fun x -> () )
-and parse_equal lhs = parser
-    | [< 'Token.Equal; rhs=parse_primary >] -> print_endline "parsed_assignment"; Ast.Equal(Ast.Value(Ast.Bool(lhs)),rhs)
+and parse_pred lhs = parser
+    | [< 'Token.Match; rhs=parse_primary >] -> print_endline "parsed_assignment"; Ast.Match(Ast.Value(Ast.Bool(lhs)),rhs)
+    | [< 'Token.NMatch; rhs=parse_primary >] -> print_endline "parsed_assignment"; Ast.NMatch(Ast.Value(Ast.Bool(lhs)),rhs)
     | [<>] -> Ast.Value(Ast.Bool(lhs))
 and parse_number n1 = parser 
     | [< 'Token.Dot ; 'Token.Number n2 ; 'Token.Dot ; 'Token.Number n3 ; 'Token.Dot; 'Token.Number n4;  ip=(parse_ip n1 n2 n3 n4) >] -> 
@@ -27,7 +28,8 @@ and combine_binary op lhs rhs = match op with
     | Token.Implies -> Ast.Implies(lhs,rhs); 
     | Token.Plus -> Ast.Plus(lhs,rhs); 
     | Token.Minus -> Ast.Minus(lhs,rhs);
-    | Token.Equal -> Ast.Equal(lhs,rhs) 
+    | Token.Match -> Ast.Match(lhs,rhs) 
+    | Token.NMatch -> Ast.NMatch(lhs,rhs) 
     | Token.Assign -> Ast.Assign(lhs,rhs)
     | Token.And  -> Ast.And(lhs,rhs)
     | Token.Or  -> Ast.Or(lhs,rhs)
@@ -80,7 +82,7 @@ and parse_expr = parser
         | Some(token) -> 
             begin
             match token with
-            | Token.Implies | Token.Plus | Token.Minus | Token.Mul | Token.Div | Token.Equal | Token.Assign | Token.And | Token.Or | Token.BImplies as op 
+            | Token.Implies | Token.Plus | Token.Minus | Token.Mul | Token.Div | Token.Match | Token.Assign | Token.And | Token.Or | Token.BImplies  | Token.NMatch as op 
                 -> (*Printf.printf "some binary token %s\n" (Token.string_of_token op);*)
                 parse_bin_rhs 0 lhs stream
             | _ -> lhs

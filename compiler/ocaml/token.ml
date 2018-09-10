@@ -10,7 +10,7 @@ type token =
   
   | Next | Not
   | Comma | Dot
-  | Implies | Plus | Minus | Mul | Div | Equal | Assign | And | Or | BImplies 
+  | Implies | Plus | Minus | Mul | Div | Match | Assign | And | Or | BImplies  | NMatch
   | Lparen | Rparen
   (* primary *)
   | Ident of string | Number of int
@@ -33,7 +33,8 @@ let string_of_token tok =
     | BImplies -> "bimplication"
     | Plus -> "plus"
     | Minus -> "minus"
-    | Equal -> "equal"
+    | Match -> "match"
+    | NMatch -> "nmatch"
     | Assign -> "assign"
     | And -> "and"
     | Or -> "or"

@@ -119,12 +119,12 @@ def gr1_expr(expr):
 
 def parse_expr(expr):
     expr = expr.strip()
-    print "expr = ",expr
+    #print "expr = ",expr
     ast_type = expr.split("(")[0].strip()
     args_string = expr[len(ast_type)-1:]
-    print (len(args_string))
+    #print (len(args_string))
     args = parse_args(args_string)
-    print "ast_type = ",ast_type," args = ",args,"\n"
+    #print "ast_type = ",ast_type," args = ",args,"\n"
     if(ast_type=="Value"):
         return parse_value(args[0]) 
     else:
@@ -218,7 +218,7 @@ class Precedence:
 
 
 def parse_precedence(macro):
-    print "parsing precedence"
+    #print "parsing precedence"
     #inner = macro[lpar1+1:rpar1]
     args = parse_args(macro)
     #print args
@@ -230,7 +230,7 @@ def parse_precedence(macro):
 
 
 def parse_invariant(macro):
-    print "parsing invariant"
+    #print "parsing invariant"
     args =  parse_args(macro)
     #print args
     return Invariant(args[0])
@@ -282,7 +282,7 @@ else:
     macros = parse_ast(sys.argv[1])
     for macro in macros:
         print macro
-        print macro.toZ3()
+        #print macro.toZ3()
 
 #main()
 

@@ -44,7 +44,7 @@
 .nnodes 1367
 .nvars 18
 .nsuppvars 18
-.suppvarnames packet_in packet_in' port@0.0.3 port@0.0.3' port@1 port@1' zcount@0.0.3 zcount@0.0.3' zcount@1 zcount@1' ocount@0.0.3 ocount@0.0.3' ocount@1 ocount@1' _jx_b0 _jx_b1 _jx_b2 strat_type
+.suppvarnames    packet_in packet_in' port@0.0.3 port@0.0.3' port@1 port@1' zcount@0.0.3 zcount@0.0.3' zcount@1 zcount@1' ocount@0.0.3 ocount@0.0.3' ocount@1 ocount@1' _jx_b0 _jx_b1 _jx_b2 strat_type
 .orderedvarnames packet_in packet_in' port@0.0.3 port@0.0.3' port@1 port@1' zcount@0.0.3 zcount@0.0.3' zcount@1 zcount@1' ocount@0.0.3 ocount@0.0.3' ocount@1 ocount@1' _jx_b0 _jx_b1 _jx_b2 strat_type
 .ids 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17
 .permids 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17

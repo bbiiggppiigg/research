@@ -28,15 +28,12 @@ let rec lex = parser
    | [<' ('.') ; stream >]->
     [< ' Token.Dot; lex stream >]
   
-   | [<' ('!') ; stream >]->
-    [< ' Token.Not; lex stream >]
-
-  | [<' ('(') ; stream >]->
+   | [<' ('(') ; stream >]->
     [< ' Token.Lparen; lex stream >]
    | [<' (')') ; stream >]->
     [< ' Token.Rparen; lex stream >]
         
-  | [<' ('=' | '-' | '+' | '*' | '/' | '<' | '>' | '&' | '|'  as c ) ; stream >] ->
+  | [<' ('=' | '-' | '+' | '*' | '/' | '<' | '>' | '&' | '|' | '!' as c ) ; stream >] ->
     let buffer = Buffer.create 1 in
     Buffer.add_char buffer c;
     lex_operator buffer stream
@@ -49,22 +46,24 @@ let rec lex = parser
   (* end of stream. *)
   | [< >] -> [< >]
 and lex_operator buffer = parser
-    | [<' ('=' | '-' | '+' | '*' | '/' | '<' | '>' | '&' | '|'  as c ) ; stream >] ->
+    | [<' ('=' | '-' | '+' | '*' | '/' | '<' | '>' | '&' | '|'  | '!' as c ) ; stream >] ->
         Buffer.add_char buffer c;
         lex_operator buffer stream
     | [< stream=lex >] ->
         match Buffer.contents buffer with
-        | "==" -> [< 'Token.Equal; stream >]
+        | "==" -> [< 'Token.Match; stream >]
+        | "!=" -> [< 'Token.NMatch; stream >]
         | "=" -> [< 'Token.Assign; stream >]
         | "+" -> [< 'Token.Plus; stream >]
         | "-" -> [< 'Token.Minus; stream >]
         | "*" -> [< 'Token.Mul; stream >]
+        | "!" -> [< ' Token.Not; stream >]
         | "/" -> [< 'Token.Div; stream >]
         | "->" -> [< 'Token.Implies; stream >]
         | "&" | "&&" -> [< 'Token.And; stream >]
         | "|" | "||" -> [< 'Token.Or; stream >]
         | "<->" -> [< 'Token.BImplies; stream >]
-        | id -> [<'Token.Ident id; stream >]
+        | id -> print_string id;[<'Token.Ident id; stream >]
 and lex_number buffer = parser
   | [< ' ('0' .. '9' as c); stream >] ->
       Buffer.add_char buffer c;

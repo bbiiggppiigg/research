@@ -20,7 +20,9 @@ type expr =
     | Minus of expr * expr
     | Assign of expr * expr
     | Value of value
-    | Equal of expr * expr
+    | Match of expr * expr
+    | NMatch of expr * expr
+
 type macro =
   | Invariant of expr 
   | Justice of expr
@@ -39,7 +41,8 @@ let rec print_expr expr depth=
     match expr with 
     | BImplies (e1,e2) -> print_string "( BImplies " ; print_expr e1 (depth+1) ; print_string " " ;print_expr e2 (depth+1); print_string ")"
     | Assign (e1,e2) -> print_string "( Assign " ; print_expr e1 (depth+1) ; print_string " " ;print_expr e2 (depth+1); print_string ")"
-    | Equal (e1,e2) -> print_string "( Equal " ; print_expr e1 (depth+1) ;  print_string " " ;print_expr e2 (depth+1); print_string ")"
+    | NMatch (e1,e2) -> print_string "( NMatch " ; print_expr e1 (depth+1) ;  print_string " " ;print_expr e2 (depth+1); print_string ")"
+    | Match (e1,e2) -> print_string "( Match " ; print_expr e1 (depth+1) ;  print_string " " ;print_expr e2 (depth+1); print_string ")"
     | Implies (e1,e2) ->  print_string "( Implies " ; print_expr e1 (depth+1) ; print_string " " ; print_expr e2 (depth+1); print_string ")"
     | And (e1,e2) -> print_string "( And " ; print_expr e1 (depth+1)  ; print_string " " ;print_expr e2 (depth+1); print_string ")"
     | Or (e1,e2) -> print_string "( Or " ; print_expr e1 (depth+1) ;  print_string " " ;print_expr e2 (depth+1); print_string ")"
@@ -52,34 +55,12 @@ and print_value v=
     | IP(ip) -> begin 
         match ip with 
         | Masked(n1,n2,n3,n4,mask) -> Printf.printf "( IP ( Masked %d.%d.%d.%d/%d))" n1 n2 n3 n4 mask
-        | Normal (n1,n2,n3,n4)  -> Printf.printf "( IP ( Normal%d.%d.%d.%d))" n1 n2 n3 n4
+        | Normal (n1,n2,n3,n4)  -> Printf.printf "( IP ( Normal %d.%d.%d.%d))" n1 n2 n3 n4
         end
 
     | Number(n) -> print_string "( Number " ; print_int n ; print_string ")"
     | Bool str -> print_string "( Bool " ; print_string str; print_string ")"
 
-(*let rec print_expr expr depth=
-    match expr with 
-    | BImplies (e1,e2) -> print_space depth; print_endline "BImplies" ; print_expr e1 (depth+1) ; print_expr e2 (depth+1)
-    | Assign (e1,e2) -> print_space depth; print_endline "Assign" ; print_expr e1 (depth+1) ; print_expr e2 (depth+1)
-    | Equal (e1,e2) -> print_space depth; print_endline "Equal" ; print_expr e1 (depth+1) ; print_expr e2 (depth+1)
-    | Implies (e1,e2) -> print_space depth; print_endline "Implies" ; print_expr e1 (depth+1) ; print_expr e2 (depth+1)
-    | And (e1,e2) -> print_space depth; print_endline "And" ; print_expr e1 (depth+1) ; print_expr e2 (depth+1)
-    | Or (e1,e2) -> print_space depth; print_endline "Or" ; print_expr e1 (depth+1) ; print_expr e2 (depth+1)
-    | Next(e) -> print_space depth; print_endline "Next" ; print_expr e (depth+1);
-    | Not(e) -> print_space depth; print_endline "Not" ; print_expr e (depth+1);
-    | Value(v) -> print_space depth; print_value v;
-    | _ -> print_endline "something else"; ()
-and print_value v=
-    match v with
-    | IP(ip) -> begin 
-        match ip with 
-        | Masked(n1,n2,n3,n4,mask) -> Printf.printf "%d.%d.%d.%d/%d\n" n1 n2 n3 n4 mask
-        | Normal (n1,n2,n3,n4)  -> Printf.printf "%d.%d.%d.%d\n" n1 n2 n3 n4
-        end
-
-    | Number(n) -> print_int n ; print_endline ""
-    | Bool str -> print_endline str;*) 
 and print_space offset = 
     print_string (String.make offset ' ' )
 ;;
