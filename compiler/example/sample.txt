@@ -1,0 +1,7 @@
+Invariant( pkt_in==1 -> X(pkt_out==2 ))
+127.0.0.1
+Precedence (pkt_in, pkt_out)
+135.0.0.2/35
+#Invariant (pkt) 
+Invariant( pkt_in==1 -> X(pkt_out==2 ))
+Precedence (pkt_in, pkt_out)

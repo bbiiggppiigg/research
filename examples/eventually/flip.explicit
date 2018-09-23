@@ -1,0 +1,19 @@
+{"version": 0,
+ "slugs": "0.0.1",
+
+ "variables": ["g"],
+
+ "nodes": {
+"0": {
+	"rank": 0,
+	"state": [0],
+	"trans": [1]
+},
+
+"1": {
+	"rank": 0,
+	"state": [1],
+	"trans": [0]
+}
+
+}}

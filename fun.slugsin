@@ -1,0 +1,23 @@
+[INPUT]
+src_mac
+
+
+[OUTPUT]
+rec
+
+
+[ENV_INIT]
+! src_mac
+
+
+[SYS_TRANS]
+| ! src_mac rec'
+
+
+[SYS_INIT]
+! rec
+
+
+[SYS_LIVENESS]
+rec
+

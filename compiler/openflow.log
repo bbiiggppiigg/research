@@ -1,0 +1,4 @@
+2018-08-06 01:33:15.154132-04:00 Info Setting log_level to Debug
+2018-08-06 01:33:15.586522-04:00 Debug Switch 0x1 connected
+2018-08-06 01:33:15.646709-04:00 Info Writing event response PacketIn
+2018-08-06 01:34:45.819231-04:00 Info Received signal sigint

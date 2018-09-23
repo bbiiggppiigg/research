@@ -1,0 +1,9 @@
+G ( ! authenticated -> !packet_out )
+(auth -> X G(authenticated))
+G(authenticated && packet_in -> packet_out )
+===============================================
+per flow 
+G(auth & authed_src=x -> X G(packet_in & ip_src_in=x -> packet_out))
+G(!auth -> !packet_out)) (drop if not authed)
+how to deal with per flow state
+

@@ -1,0 +1,3 @@
+Invariant ( !((IP4Src==127.0.0.1/24) -> (Port ==5)))
+Invariant ( (!(IP4Src !=127.0.0.1/8)) -> (Port ==6))
+Invariant ( !(IP4Src==128.0.0.1/8) -> (!(Port ==6)))

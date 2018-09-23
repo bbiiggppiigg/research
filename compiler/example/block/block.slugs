@@ -1,0 +1,41 @@
+[INPUT]
+i1
+i4
+i7
+i10
+i13
+i15
+i2
+i5
+i8
+i11
+i14
+i16
+i3
+i6
+i9
+i12
+
+[OUTPUT]
+block
+s1
+s2
+
+[SYS_TRANS]
+| ! & & | | & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & i3 ! i6 i9 i12 & & & i3 i6 i9 ! i12 & & & i3 i6 i9 i12
+| ! & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & ! i3 i6 ! i9 i12 & & & i3 i6 i9 ! i12 & & & i3 i6 i9 i12
+| ! & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & i3 ! i6 i9 i12 & & & i3 i6 i9 ! i12 & & & i3 i6 i9 i12
+| ! & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & ! i3 i6 ! i9 i12 & & & i3 ! i6 i9 i12 & & & i3 i6 i9 i12
+| & ! | & & | | & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s1 ! 0 ! s1' & | & & | | & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s1 ! 0 s1'
+| ! s1 block
+| & ! | & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s2 ! 0 ! s2' & | & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s2 ! 0 s2'
+| ! s2 block
+
+[SYS_INIT]
+! block
+! s1
+! s2
+
+[ENV_LIVENESS]
+
+
