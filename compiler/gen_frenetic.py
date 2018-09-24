@@ -56,7 +56,8 @@ get_sign = lambda x : (1,x) if x > 0 else (-1,-x) if x < 0 else (0,0)
 
 def print_init(variables,table,numtabs):
     with open("skeleton/nib.py") as f:
-        skeleton = f.read()
+        skeleton = f.read().replace("    ","\t")
+
     ret = ""
     numtabs = 2
     for var in variables:
@@ -68,7 +69,8 @@ def print_init(variables,table,numtabs):
 
 def print_import():
     with open("skeleton/import.py") as f:
-        skeleton = f.read()
+        skeleton = f.read().replace("    ","\t")
+
     return skeleton
 
 
@@ -89,6 +91,8 @@ def split_vars(stack,graph,label_map):
     for index in stack:
         sign,value = get_sign(index)
         varname = label_map[graph[value][1]]
+        if(varname == "_jx_b0"):
+            continue
         if("'" in varname):
             primed.append(index)
         else:
@@ -110,10 +114,12 @@ def split_primed(stack,graph,label_map,table):
 isfirst = True
 def pretty_print_sol(cond_list,input_cond_list,action_list,numtabs):
     global isfirst
+    global case_counter 
+    ret = "\t" * numtabs + "# Case = %d\n"%case_counter
     if(not isfirst):
-        ret = "\t" *numtabs + "elif ( " + " and ".join(cond_list) +" ):\n"
+        ret += "\t" *numtabs + "elif ( " + " and ".join(cond_list) +" ):\n"
     else:
-        ret = "\t" *numtabs + "if ( " + " and ".join(cond_list) +" ):\n"
+        ret += "\t" *numtabs + "if ( " + " and ".join(cond_list) +" ):\n"
     ret +="\t" * (numtabs+1) + "if ( " + " and ".join(input_cond_list) + " ):\n"
     for action in action_list:
         if( "nib" in action ):
@@ -123,9 +129,15 @@ def pretty_print_sol(cond_list,input_cond_list,action_list,numtabs):
                 ret += "\t" * (numtabs+2) + "actions += []\n" 
             else:
                 ret += "\t" * (numtabs+2) + "actions += " + action+"\n"
+    ret += "\t" * (numtabs+1) + "print %d\n"%case_counter
+    
+    case_counter += 1
     isfirst = False
     print ret
     return ret
+
+
+case_counter = 0 
 
 def print_sol(stack,graph,label_map):
     table = fake_table()
@@ -198,7 +210,7 @@ def dfs(root, goal,graph,stack,label_map):
 def print_def():
     ret = ""
     with open("skeleton/app.py") as f:
-        ret+= "\n"+f.read()
+        ret+= "\n"+f.read().replace("    ","\t")
     ret += "\tdef packet_in(self,dpid,port_id,payload):\n"
     ret += "\t\tpkt = Packet.from_payload(dpid,port_id,payload)\n"
     ret += "\t\tactions = []\n"
