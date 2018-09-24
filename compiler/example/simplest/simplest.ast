@@ -1,0 +1,2 @@
+Invariant ( Implies ( Match ( Value ( Bool ip4Src)) ( Value ( IP ( Normal 10.0.0.1)))) ( Match ( Value ( Bool Port)) ( Value ( Number 2))))
+Invariant ( Implies ( Match ( Value ( Bool ip4Src)) ( Value ( IP ( Normal 10.0.0.2)))) ( Match ( Value ( Bool Port)) ( Value ( Number 1))))

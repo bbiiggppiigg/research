@@ -1,0 +1,3 @@
+Invariant(  (ip4Src==10.0.0.1)  -> (Port==2))
+Invariant(  (ip4Src==10.0.0.2)  -> (Port==1))
+

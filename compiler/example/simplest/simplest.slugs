@@ -1,0 +1,20 @@
+[INPUT]
+i1
+i3
+
+[OUTPUT]
+o2
+o4
+
+[SYS_TRANS]
+| ! | & i1 ! i3 & i1 i3 | & o2 ! o4 & o2 o4
+| ! | & ! i1 i3 & i1 i3 | & ! o2 o4 & o2 o4
+
+[SYS_INIT]
+
+o2
+o4
+
+[ENV_LIVENESS]
+
+

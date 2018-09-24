@@ -101,7 +101,7 @@ class UnaOp(AST):
                 debug(e)
                 return self
         else:
-            return self.nnf()
+            return self.term.nnf()
     def negate(self):
         import copy
         if (self.ast_type == "Not"):
@@ -115,7 +115,8 @@ class Predicate(AST):
     compl_dict = {
                 "Gt":"Leq","Geq":"Lt","Lt":"Geq","Leq":"Gt","Match":"NMatch","NMatch":"Match"
                 }
-   
+    istr = "i%d"
+    ostr = "o%d"
     def __hash__(self):
         return self.id
     
@@ -125,14 +126,19 @@ class Predicate(AST):
     def gr1_repr(self):
         index = self.id
         if(index > 0):
-            return "i%d"%index
+            return self.fmt_str%index
         else:
-            return "!i%d"%(-index)
-    def __init__(self,ast_type,left,right,pid = None):
+            return "!"+ self.fmt_str%(-index)
+    def __init__(self,ast_type,left,right,input_vars,pid = None):
+        self.input_vars = input_vars
         self.ast_type= ast_type
         self.left = left
         self.right = right
         self.var = self.left.term
+        if(self.var not in input_vars):
+            self.fmt_str = Predicate.ostr
+        else:
+            self.fmt_str = Predicate.istr
         if(pid is not None):
             self.id = pid
         else:
@@ -188,7 +194,7 @@ class Predicate(AST):
     
     def negate(self):
         new_type = Predicate.compl_dict[self.ast_type] 
-        return Predicate(new_type,self.left,self.right,-self.id)   
+        return Predicate(new_type,self.left,self.right,self.input_vars,-self.id)   
     
 class Value(AST):
 

@@ -16,9 +16,10 @@ from ast import *
 # A global variable for storing default input variable names to z3 variables mapping
 variables = dict()
 
+predicates = dict()
 
 input_vars = set(
-[ 'ethDst' , 'ethSrc', 'ethType', 'ip4Dst' , 'ip4Src' , 'ipProto' , 'Port' ,
+[ 'ethDst' , 'ethSrc', 'ethType', 'ip4Dst' , 'ip4Src' , 'ipProto' , 'InPort' ,
 #Switch
 #"TCPDstPort","TCPSrcPort","Vlan","VlanPcp"
 ])
@@ -96,7 +97,7 @@ Recursively Generate AST from input expression string expr
 def gen_ast(expr):
     ast_type, args = get_info(expr)
     if(isPredicate(ast_type)):
-        return Predicate(ast_type,gen_ast(args[0]),gen_ast(args[1]))
+        return Predicate(ast_type,gen_ast(args[0]),gen_ast(args[1]),input_vars)
     elif(isBinary(ast_type)):
         return BinOp(ast_type,gen_ast(args[0]),gen_ast(args[1]))
     elif(isUnary(ast_type)):
@@ -427,7 +428,12 @@ def collect_gr1(macros):
         lives += live
     ret = "[ENV_INIT]\n"
     ret +="[SYS_INIT]\n"
-    ret += "!block\n"
+    for var in predicates:
+        if( var not in input_vars):
+            for pred in predicates[var]:
+                ret += "\n"+pred.gr1_repr()
+        
+    
     ret += "\n".join(inits)
     ret + "\n[ENV_TRANS]\n"
     ret +="\n[SYS_TRANS]\n"
@@ -438,7 +444,7 @@ def collect_gr1(macros):
     return ret
 
 
-def write_gr1(macros,predicates):
+def write_gr1(macros,predicates,output_file):
     spec = "[INPUT]\n"
     for var in predicates:
         if( (var not in input_vars) ):
@@ -446,16 +452,16 @@ def write_gr1(macros,predicates):
         for predicate in predicates[var]:
             spec += "i%s\n"% abs(predicate.id)
     spec += "[OUTPUT]\n"
-    spec += "block\n"
     for var in predicates:
-        if( (var in input_vars) or var == "Port"):
+        if( (var in input_vars) ):
             continue
-        spec += "o%s\n"% abs(predicates[var].id)
+        for predicate in predicates[var]:
+            spec += "o%s\n"% abs(predicate.id)
     
     for i in range(1,StateVar.LAST_ID+1):
         spec += "s%s\n"% i
     spec += collect_gr1(macros)
-    with open ("example/block/block.structured_slugs","w") as f:
+    with open (output_file,"w") as f:
         
         f.write(spec)
  
@@ -463,13 +469,12 @@ def main():
     import sys
 
     
-    if len(sys.argv)  < 2:
-        print "usage : check_dependency.py <ast_filename>"
+    if len(sys.argv)  < 3:
+        print "usage : check_dependency.py <ast_filename> <structured_slugs_filename>"
         exit(-1)
     else:
         #print sys.argv[1]
         
-        predicates = dict()
         for var in input_vars:
             variables[var] = Int(var)
             predicates[var] = list()
@@ -487,6 +492,10 @@ def main():
             for predicate in predicate_list:
                 #print "Original : ",pred
                 #print "NNF : ", pred.nnf()
+                if( predicate.var not in variables):
+                    variables[predicate.var] = Int(var)
+                    predicates[predicate.var] = list()
+                    per_var_minterms[predicate.var] = list()
                 predicates[predicate.var].append(predicate)
                 #pred.toZ3(variables)
        
@@ -543,10 +552,11 @@ def main():
                 #print "negative mitnerms for predicate\n\t" ,pred , " len = ",len(minterms[pred][0])," = ",minterms[pred][0]
                 #print ""
                 #print "positive mitnerms for predicate\n\t" ,pred ,  " len = ",len(minterms[pred][1])," = ",minterms[pred][1]
-         
+            for pred in predicates[var]:
+                print pred,pred.id
         for macro in macros:
             macro.rewrite(rewrite_table)
-        write_gr1(macros,predicates)
+        write_gr1(macros,predicates,sys.argv[2])
         #neg = minterms[var][0]
         #pos = minterms[var][1]
         #print "neg = ",neg
