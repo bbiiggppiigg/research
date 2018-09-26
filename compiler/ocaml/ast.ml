@@ -3,10 +3,14 @@ type ip =
     | Normal of int * int * int * int
 
 
+type var = string
+
+
 type value = 
     | IP of ip
     | Number of int
-    | Bool of string
+    | Bool of var
+    | Neg of value
 
 
 type expr = 
@@ -22,7 +26,7 @@ type expr =
     | Value of value
     | Match of expr * expr
     | NMatch of expr * expr
-
+    | GG
 type macro =
   | Invariant of expr 
   | Justice of expr
@@ -60,6 +64,7 @@ and print_value v=
 
     | Number(n) -> print_string "( Number " ; print_int n ; print_string ")"
     | Bool str -> print_string "( Bool " ; print_string str; print_string ")"
+    | Neg str -> print_string " ( Not " ; print_value str ; print_string ")"
 
 and print_space offset = 
     print_string (String.make offset ' ' )
@@ -70,5 +75,5 @@ let print_macro macro =
     | Justice(exp) -> print_string "Justice " ;print_expr exp 1 ; print_endline ""
     | Precedence(e1,e2) -> print_string  "Precedence "; print_expr e1 1 ; print_string " " ;print_expr e2 1 ; print_endline ""
     | Reaction(e1,e2,e3) -> print_string "Reaction "; print_expr e1 1 ; print_string " " ; print_expr e2 1 ; print_string " " ; print_expr e3 1 ; print_endline ""
-
+    | _ -> print_string "Un Supported Macro Type !"
 

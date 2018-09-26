@@ -20,7 +20,7 @@ let rec main_loop stream =
                         let precedence = (Parser.parse_precedence stream)in   
                         Ast.print_macro precedence;
                         precedence; 
-                | _ -> Printf.printf "expecting macro, get %s\n" (Token.string_of_token token) ; exit 0 ; Ast.Error
+                | _ -> Printf.printf "expecting macro, get %s\n" (Token.string_of_token token) ;  Ast.Error
                 with Stream.Error s ->
                     print_endline "Some Stream Error !!";
                     Stream.junk stream;
@@ -28,4 +28,4 @@ let rec main_loop stream =
             end;
         (*Stream.junk stream;*)
         main_loop stream;
-    | None -> ()
+    | None -> Ast.Error

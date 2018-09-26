@@ -111,7 +111,12 @@ def split_primed(stack,graph,label_map,table):
             outputs.append(index)
     return inputs,outputs
 
+
+
+
 isfirst = True
+
+
 def pretty_print_sol(cond_list,input_cond_list,action_list,numtabs):
     global isfirst
     global case_counter 

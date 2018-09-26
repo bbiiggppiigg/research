@@ -2,24 +2,24 @@ CC=ocamlc
 CC_OPT=-pp camlp4o
 
 
-all: compiler
+all: compiler.cmi
 	$(CC) $(CC_OPT)  -o ../compiler token.cmo lexer.cmo ast.cmo parser.cmo toplevel.cmo compiler.cmo
 
-token:
+token.cmi: token.ml
 	$(CC) $(CC_OPT) -c token.ml
-lexer: token
+lexer.cmi: token.cmi lexer.ml
 	$(CC) $(CC_OPT) -c lexer.ml
 
-ast: lexer
+ast.cmi: lexer.cmi ast.ml
 	$(CC) $(CC_OPT) -c ast.ml
 
-parser: ast
+parser.cmi: ast.cmi parser.ml
 	$(CC) $(CC_OPT) -c parser.ml
 
-toplevel: parser
+toplevel.cmi: parser.cmi toplevel.ml
 	$(CC) $(CC_OPT) -c toplevel.ml
 
-compiler: toplevel
+compiler.cmi: toplevel.cmi compiler.ml
 	$(CC) $(CC_OPT) -c compiler.ml
 
 clean:

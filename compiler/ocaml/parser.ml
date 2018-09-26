@@ -34,6 +34,7 @@ and combine_binary op lhs rhs = match op with
     | Token.And  -> Ast.And(lhs,rhs)
     | Token.Or  -> Ast.Or(lhs,rhs)
     | Token.BImplies -> Ast.BImplies(lhs,rhs)
+    | _ -> Ast.GG
 and parse_bin_rhs expr_prec lhs stream =
     match Stream.peek stream with
     (* If this is a binop, find its precedence. *)
@@ -82,7 +83,7 @@ and parse_expr = parser
         | Some(token) -> 
             begin
             match token with
-            | Token.Implies | Token.Plus | Token.Minus | Token.Mul | Token.Div | Token.Match | Token.Assign | Token.And | Token.Or | Token.BImplies  | Token.NMatch as op 
+            | Token.Implies | Token.Plus | Token.Minus | Token.Mul | Token.Div | Token.Match | Token.Assign | Token.And | Token.Or | Token.BImplies  | Token.NMatch (*as op *)
                 -> (*Printf.printf "some binary token %s\n" (Token.string_of_token op);*)
                 parse_bin_rhs 0 lhs stream
             | _ -> lhs
@@ -101,7 +102,7 @@ let parse_precedence = parser
         end;*)
         Ast.Precedence(before,after)
 
-| [<>] -> print_endline "failure parse precedence" ; exit 0;Ast.Error 
+| [<>] -> print_endline "failure parse precedence" ; Ast.Error 
 
 let parse_reaction = parser
     | [< 'Token.Reaction; 'Token.Lparen; trigger = parse_expr; 'Token.Comma; policy =parse_expr;'Token.Comma ; deactivate = parse_expr; 'Token.Rparen >] 

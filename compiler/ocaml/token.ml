@@ -10,7 +10,7 @@ type token =
   
   | Next | Not
   | Comma | Dot
-  | Implies | Plus | Minus | Mul | Div | Match | Assign | And | Or | BImplies  | NMatch
+  | Implies | Plus | Div | Minus | Mul | Match | Assign | And | Or | BImplies  | NMatch
   | Lparen | Rparen
   (* primary *)
   | Ident of string | Number of int
@@ -43,5 +43,5 @@ let string_of_token tok =
     | Ident str -> Printf.sprintf "ident:%s" str
     | Number n -> Printf.sprintf "number:%d" n
     | Kwd c -> Printf.sprintf "kwd:%c" c
-
+    | _ -> "not supported"
 
