@@ -2,7 +2,7 @@
 from z3 import And, Or , Not,Int , Solver, sat ,simplify
 from parser import find_lparen, find_rparen , parse_args, parse_ip ,get_ip ,get_info,is_ip
 from ast import *
-
+from lookup import LookupTable 
 
 
 """
@@ -19,15 +19,17 @@ variables = dict()
 predicates = dict()
 
 input_vars = set(
-[ 'ethDst' , 'ethSrc', 'ethType', 'ip4Dst' , 'ip4Src' , 'ipProto' , 'InPort' ,
-#Switch
-#"TCPDstPort","TCPSrcPort","Vlan","VlanPcp"
-])
+        [ 'ethDst' , 'ethSrc', 'ethType', 'ip4Dst' , 'ip4Src' , 'ipProto' , 'port_id' ,
+            #Switch
+            #"TCPDstPort","TCPSrcPort","Vlan","VlanPcp"
+            ])
 
 
-   #minterms[var] = list()
+        #minterms[var] = list()
     #minterms[var].append(list())
     #minterms[var].append(list())
+
+     
 
 MAX_MAC = ((1<<48) -1)
 
@@ -54,13 +56,13 @@ def getInitSolver():
     def add_range(s,var,minv,maxv):
         s.add( minv <= variables[var] )
         s.add( variables[var] <= maxv )
-    
+
     add_range(s,'ethDst',0,MAX_MAC)
     add_range(s,'ethSrc',0,MAX_MAC)
     add_range(s,'ipProto',1,255)
     return s
 
-    
+
 def gen_value(value_string):
     ast_type, args = get_info(expr)
     if(ast_type == "Number"):
@@ -85,7 +87,7 @@ def get_predicates(ast):
         ret += get_predicates(ast.right)
     elif(ast.__class__ == UnaOp):
         ret += get_predicates(ast.term)
-    
+
     return ret
 
 
@@ -96,6 +98,7 @@ Recursively Generate AST from input expression string expr
 
 def gen_ast(expr):
     ast_type, args = get_info(expr)
+    print ast_type
     if(isPredicate(ast_type)):
         return Predicate(ast_type,gen_ast(args[0]),gen_ast(args[1]),input_vars)
     elif(isBinary(ast_type)):
@@ -104,16 +107,16 @@ def gen_ast(expr):
         return UnaOp(ast_type,gen_ast(args[0]))
     elif(isValue(ast_type)):
         value_type, value_args = get_info(args[0])
-         
+
         if(value_type != "IP"):
             #print "value_type = ",value_type
             value_type, value_args = value_type.split()
-        
+
             if(value_type == "Bool"):
                 return Value(value_type,value_args)
             elif(value_type == "Number"):
                 return Value (value_type,int(value_args))
-        
+
         elif(value_type == "IP"):
             return Value (value_type,IP(value_args[0]))
     else:
@@ -129,13 +132,13 @@ def parse_expr(expr):
     else:
         if(ast_type == 'And'):
             return And(parse_expr(args[0]),parse_expr(args[1]))
-        if(ast_type == "BImplies"):
+        elif(ast_type == "BImplies"):
             return (parse_expr(args[0]) == parse_expr(args[1]))
-        if(ast_type == "Or"):
+        elif(ast_type == "Or"):
             return Or(parse_expr(args[0]),parse_expr(args[1]))
-        if(ast_type == "Not"):
+        elif(ast_type == "Not"):
             return Not(parse_expr(args[0]))
-        if(ast_type == "Match"):
+        elif(ast_type == "Match"):
             if(is_ip(args[1])):
                 print "do something !"
                 left = parse_expr(args[0])
@@ -143,6 +146,29 @@ def parse_expr(expr):
                 return And(left <= ips[0] , left >= ips[1])
             else:
                 return(parse_expr(args[0])==parse_expr(args[1]))
+        elif(ast_type == "NMatch"):
+            if(is_ip(args[1])):
+                print "do something !"
+                left = parse_expr(args[0])
+                ips =  get_ip(args[1])
+                return Not(And(left <= ips[0] , left >= ips[1]))
+            else:
+                return(parse_expr(args[0])!=parse_expr(args[1]))
+        
+        elif(ast_type == "Assign"):
+            if(is_ip(args[1])):
+                print "do something !"
+                left = parse_expr(args[0])
+                ips =  get_ip(args[1])
+                return And(left <= ips[0] , left >= ips[1])
+            else:
+                print "Find Assignment !!!, transalte into predicate"
+                
+                print (parse_expr(args[0])==parse_expr(args[1]))
+                return(parse_expr(args[0])==parse_expr(args[1]))
+        else:
+            print "Un Supported Z3 !!"
+            exit(-1)
 
 
 class Invariant:
@@ -158,13 +184,13 @@ class Invariant:
         #self.prop_ast = self.prop_ast.nnf()
         self.predicates = get_predicates(self.prop_ast)
         print_ast(self.prop_ast) 
-    
+
     def rewrite(self,rewrite_table):
         self.prop_ast = self.prop_ast.rewrite(rewrite_table)
-    
+
     def collect_gr1(self):
         prop_str = self.prop_ast.gr1_repr()
-        
+
         return  [],[prop_str],[] 
     def getPredicates(self):
         return self.predicates
@@ -196,24 +222,24 @@ class Reaction:
         trigger = self.trigger_ast.gr1_repr()
         trans = [
                 "(%s | (%s & !%s)) <-> X(%s)"%(trigger,triggered,terminate,triggered),
-                    "(%s)->(%s)"%(triggered,policy),
+                "(%s)->(%s)"%(triggered,policy),
                 ]
         return init, trans , []
- 
+
 
     def __init__(self,trigger,policy,terminate):
         self.trigger = trigger
         self.policy = policy
         self.terminate = terminate
-        
+
         self.trigger_ast = gen_ast(self.trigger).nnf()
         self.policy_ast = gen_ast(self.policy).nnf()
         self.terminate_ast = gen_ast(self.terminate).nnf()
-        
+
         self.predicates = reduce(lambda a,b : a+b ,map( get_predicates, [self.trigger_ast,self.policy_ast,self.terminate_ast] ))
         self.triggered = StateVar()
         print self.predicates
-        
+
     def rewrite(self,rewrite_table):
         self.trigger_ast = self.trigger_ast.rewrite(rewrite_table)
         self.policy_ast = self.policy_ast.rewrite(rewrite_table)
@@ -232,11 +258,11 @@ class Reaction:
 
     def toZ3(self):
         return [parse_expr(self.trigger),parse_expr(self.policy),parse_expr(self.terminate)]
-    
+
     def getPredicates(self):
         return self.predicates
-        #return [self.trigger,self.policy,self.terminate]
- 
+    #return [self.trigger,self.policy,self.terminate]
+
 class Justice:
 
     def __init__(self,prop):
@@ -250,7 +276,7 @@ class Justice:
         return [parse_expr(self.prop)]
     def getPredicates(self):
         return [self.prop]
- 
+
 class Precedence:
 
     def __init__(self,before,after):
@@ -275,7 +301,7 @@ class Precedence:
         return [parse_expr(self.before),parse_expr(self.after)]
     def getPredicates(self):
         return [self.before,self.after]
- 
+
 
 
 
@@ -351,21 +377,22 @@ def recurse_with_solver(solver,var,sofar,preds,depth,bitlist,minterms):
         sofar = simplify(sofar)
         print "minterm found" , sofar
         print "bitlist = ", bitlist
-        
+
         minterm_id = len(per_var_minterms[var])
         per_var_minterms[var].append(bitlist)
-        
-        
+
+
         for i in range (len(bitlist)):
             b= bitlist[i]
             pred = preds[i]
             minterms[pred][b].append(minterm_id)
-        
+
         return [sofar]
     solver.push()
+    print "sofar = ", sofar, "preds =  " ,  preds[depth].toZ3(variables) , "depth = ",depth
     solver.add(preds[depth].toZ3(variables))
     if(solver.check()==sat):
-        #print "checking truth"
+        print "checking truth"
         ret += recurse_with_solver(
                 solver,var,And(sofar,preds[depth].toZ3(variables))
                 ,preds,depth+1,bitlist+[1],minterms
@@ -374,7 +401,7 @@ def recurse_with_solver(solver,var,sofar,preds,depth,bitlist,minterms):
     solver.push()
     solver.add( Not(preds[depth].toZ3(variables)))
     if(solver.check()==sat):
-        #print "checking false"
+        print "checking false"
         ret +=  recurse_with_solver(
                 solver,var,And(sofar,Not(preds[depth].toZ3(variables)))
                 ,preds,depth+1,bitlist+[0],minterms
@@ -397,7 +424,7 @@ def disjuncts(a,b):
 """
     Returns a dictionary of list for each variable, contains the meaning of each minterm
     per_var_table {ip4Dst :  [And(ip4Dst==3,ip4Dst!=4), ... ] , ip4Src : [ And(...,...) ] }
-    
+
 """
 
 
@@ -409,9 +436,9 @@ def get_minterm_table(per_var_minterms,predicates):
         if(len(encodings)==0):
             continue
         for index, encoding in enumerate(encodings) :
-            
+
             #print var,index,encodings
-            
+
             minterm = reduce(conjuncts,[ predicates[var][bitindex] if bit ==0 else predicates[var][bitindex].negate() for bitindex,bit in enumerate(encoding)  ])
             per_var_table[var].append(minterm)
     return per_var_table
@@ -432,8 +459,8 @@ def collect_gr1(macros):
         if( var not in input_vars):
             for pred in predicates[var]:
                 ret += "\n"+pred.gr1_repr()
-        
-    
+
+
     ret += "\n".join(inits)
     ret + "\n[ENV_TRANS]\n"
     ret +="\n[SYS_TRANS]\n"
@@ -457,30 +484,30 @@ def write_gr1(macros,predicates,output_file):
             continue
         for predicate in predicates[var]:
             spec += "o%s\n"% abs(predicate.id)
-    
+
     for i in range(1,StateVar.LAST_ID+1):
         spec += "s%s\n"% i
     spec += collect_gr1(macros)
     with open (output_file,"w") as f:
-        
+
         f.write(spec)
- 
+
 def main():
     import sys
 
-    
+
     if len(sys.argv)  < 3:
         print "usage : check_dependency.py <ast_filename> <structured_slugs_filename>"
         exit(-1)
     else:
         #print sys.argv[1]
-        
+
         for var in input_vars:
             variables[var] = Int(var)
             predicates[var] = list()
             per_var_minterms[var] = list() 
-        
-        
+
+
         macros = generate_macros(sys.argv[1])
         """
             1. Collect from each macro the expressions that we need to examine,
@@ -493,12 +520,12 @@ def main():
                 #print "Original : ",pred
                 #print "NNF : ", pred.nnf()
                 if( predicate.var not in variables):
-                    variables[predicate.var] = Int(var)
+                    variables[predicate.var] = Int(predicate.var)
                     predicates[predicate.var] = list()
                     per_var_minterms[predicate.var] = list()
                 predicates[predicate.var].append(predicate)
                 #pred.toZ3(variables)
-       
+
         """
             After this step , all predicates are grouped by variable name in a global dictionary
             For example
@@ -507,18 +534,20 @@ def main():
             predicates[SrcIP] = (SrcIP != 6 )
 
         """
-        
+    
         minterms = dict()
         for var in predicates:
-            #if(len(predicates[var])!=0):
+            preds = predicates[var]
+            #if(len(preds)!=0):
             #    print "Available Predicats = ",predicates
-            for pred in predicates[var]:
+            for pred in preds:
                 minterms[pred] = list()
                 minterms[pred].append(list())
                 minterms[pred].append(list())
-       
+         
         for var in predicates:
             preds = predicates[var]
+            print "var = ", var , "preds = ", preds
             if(len(preds)==0):
                 continue
             s = getInitSolver()
@@ -527,20 +556,20 @@ def main():
                 #print "negative mitnerms for predicate\n\t" ,pred , " len = ",len(minterms[pred][0])," = ",minterms[pred][0]
                 #print ""
                 #print "positive mitnerms for predicate\n\t" ,pred ,  " len = ",len(minterms[pred][1])," = ",minterms[pred][1]
-        
+
         minterm_table = get_minterm_table(per_var_minterms,predicates)
         for var in predicates:
             print len(minterm_table[var]) ,len(per_var_minterms[var])
-       
+
         rewrite_table = dict()
         for var in predicates:
             preds = predicates[var]
             if(len(preds)==0):
                 continue
             print "\n\nvar = ", var 
-            for pred in predicates[var]:
+            for pred in preds:
                 #print minterms[pred][0]
-                
+
                 #print minterms[pred][1]
                 #print len(minterm_table[var])
                 """
@@ -548,15 +577,20 @@ def main():
                     propositions
                 """
                 rewrite_table [pred] = reduce(disjuncts,[ minterm_table[var][minterm_id] for minterm_id in minterms[pred][0]])
-                
+
                 #print "negative mitnerms for predicate\n\t" ,pred , " len = ",len(minterms[pred][0])," = ",minterms[pred][0]
                 #print ""
                 #print "positive mitnerms for predicate\n\t" ,pred ,  " len = ",len(minterms[pred][1])," = ",minterms[pred][1]
             for pred in predicates[var]:
-                print pred,pred.id
+                print "predicate = ", pred ," predicate id  = " ,pred.id
         for macro in macros:
             macro.rewrite(rewrite_table)
         write_gr1(macros,predicates,sys.argv[2])
+        
+        dump_table = LookupTable(variables,input_vars,predicates)
+        with open("test.db", "wb" ) as f:
+            import pickle
+            pickle.dump(dump_table,f)
         #neg = minterms[var][0]
         #pos = minterms[var][1]
         #print "neg = ",neg

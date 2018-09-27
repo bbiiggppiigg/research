@@ -113,7 +113,7 @@ class Predicate(AST):
     
     LAST_ID = 0
     compl_dict = {
-                "Gt":"Leq","Geq":"Lt","Lt":"Geq","Leq":"Gt","Match":"NMatch","NMatch":"Match"
+            "Gt":"Leq","Geq":"Lt","Lt":"Geq","Leq":"Gt","Match":"NMatch","NMatch":"Match","Assign":"NAssign","NAssign":"Assign"
                 }
     istr = "i%d"
     ostr = "o%d"
@@ -155,7 +155,7 @@ class Predicate(AST):
         if( isinstance(self.left,Value)):
             if(self.left.ast_type=="Bool"):
                 var = variables[self.left.term]
-
+                #print "var = ",var
                 if (isinstance(self.right,Value)):          
                     if(isinstance(self.right.term,IP)):      # IP can only be matched, no comparison
                         ip_instance = self.right.term
@@ -179,6 +179,10 @@ class Predicate(AST):
                                 return  var == self.right.term
                             elif (self.ast_type == "NMatch"):
                                 return  var != self.right.term
+                            elif (self.ast_type == "NAssign"):
+                                return  var != self.right.term
+                            elif (self.ast_type == "Assign"):
+                                return var ==  self.right.term
                             else:
                                 print "Error!!"
                         #print "something else!!",self.right.term.__class__
@@ -257,7 +261,7 @@ class IP:
         ret = self.address
         if(self.masked):
             ret += ("/%d"%(self.mask))
-        return ret
+        return '"'+ret+'"'
 
     def get_range(self):
         return self.min_value,self.max_value
@@ -279,7 +283,7 @@ def isValue(ast_type):
     return ast_type in values
 
 def isPredicate(ast_type):
-    pops = ["NMatch","Match","Gt","Lt","Geq","Leq"]
+    pops = ["NAssign","Assign","NMatch","Match","Gt","Lt","Geq","Leq"]
     return ast_type in pops
 
 

@@ -14,8 +14,9 @@ and parse_negation = parser
 and print_endline = 
     (fun x -> () )
 and parse_pred lhs = parser
-    | [< 'Token.Match; rhs=parse_primary >] -> print_endline "parsed_assignment"; Ast.Match(Ast.Value(Ast.Bool(lhs)),rhs)
-    | [< 'Token.NMatch; rhs=parse_primary >] -> print_endline "parsed_assignment"; Ast.NMatch(Ast.Value(Ast.Bool(lhs)),rhs)
+    | [< 'Token.Match; rhs=parse_primary >] -> print_endline "parsed_match"; Ast.Match(Ast.Value(Ast.Bool(lhs)),rhs)
+    | [< 'Token.NMatch; rhs=parse_primary >] -> print_endline "parsed_nmatch"; Ast.NMatch(Ast.Value(Ast.Bool(lhs)),rhs)
+    | [< 'Token.Assign; rhs=parse_primary >] -> print_endline "parsed_assignment"; Ast.Assign(Ast.Value(Ast.Bool(lhs)),rhs)
     | [<>] -> Ast.Value(Ast.Bool(lhs))
 and parse_number n1 = parser 
     | [< 'Token.Dot ; 'Token.Number n2 ; 'Token.Dot ; 'Token.Number n3 ; 'Token.Dot; 'Token.Number n4;  ip=(parse_ip n1 n2 n3 n4) >] -> 
