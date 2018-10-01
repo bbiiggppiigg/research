@@ -17,7 +17,6 @@ type token =
 
   (* unknown *)
   | Kwd of char
-  
 
 let string_of_token tok = 
     match tok with

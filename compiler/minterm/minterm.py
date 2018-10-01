@@ -25,13 +25,8 @@ input_vars = set(
             ])
 
 
-        #minterms[var] = list()
-    #minterms[var].append(list())
-    #minterms[var].append(list())
-
      
 
-MAX_MAC = ((1<<48) -1)
 
 
 def parse_value(expr):
@@ -52,6 +47,7 @@ def parse_value(expr):
     return ret
 
 def getInitSolver():
+    MAX_MAC = ((1<<48) -1)
     s = Solver()
     def add_range(s,var,minv,maxv):
         s.add( minv <= variables[var] )
