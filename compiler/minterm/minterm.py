@@ -454,7 +454,7 @@ def collect_gr1(macros):
     for var in predicates:
         if( var not in input_vars):
             for pred in predicates[var]:
-                ret += "\n"+pred.gr1_repr()
+                ret += "\n"+pred.gr1_repr() +"\n"
 
 
     ret += "\n".join(inits)
@@ -487,6 +487,13 @@ def write_gr1(macros,predicates,output_file):
     with open (output_file,"w") as f:
 
         f.write(spec)
+
+
+
+class Minterm():
+    ID = 0
+    def __init__(self,predicate_list):
+        self.plist = predicate_list
 
 def main():
     import sys
@@ -587,6 +594,7 @@ def main():
         with open("test.db", "wb" ) as f:
             import pickle
             pickle.dump(dump_table,f)
+        print dump_table
         #neg = minterms[var][0]
         #pos = minterms[var][1]
         #print "neg = ",neg
