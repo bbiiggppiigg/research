@@ -1,2 +1,2 @@
-Invariant ( Implies ( Match ( Value ( Bool ip4Src)) ( Value ( IP ( Normal 10.0.0.1)))) ( Assign ( Value ( Bool Port)) ( Value ( Number 2))))
-Invariant ( Implies ( Match ( Value ( Bool ip4Src)) ( Value ( IP ( Normal 10.0.0.2)))) ( Assign ( Value ( Bool Port)) ( Value ( Number 1))))
+invariant (implies ( match (var (ip4Src)) (ip (10.0.0.1/32)) ) ( assign (var (Port)) (int (2)) ))
+invariant (implies ( match (var (ip4Src)) (ip (10.0.0.2/32)) ) ( assign (var (Port)) (int (1)) ))

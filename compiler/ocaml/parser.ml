@@ -1,41 +1,46 @@
 let binop_precedence:(Token.token, int) Hashtbl.t = Hashtbl.create 10
 let precedence c = try Hashtbl.find binop_precedence c with Not_found -> -1
 
+
+(* return expression type *)
 let rec parse_primary = parser
-    | [< 'Token.Number n1 ; x=(parse_number n1) >] ->  Ast.Value(x);
-    | [< 'Token.Lparen ; e = parse_expr ; 'Token.Rparen >] -> e
-    | [< 'Token.Not ; e=parse_negation; >] ->  e
-    | [< 'Token.Next ; e = parse_expr; >] ->  Ast.Next(e)
-    | [< 'Token.Ident str ; e = (parse_pred str); >] -> print_endline "find a string, checking assignment" ; e 
-    | [<>] -> print_endline "end parsing primary"; Ast.Value(Ast.Number(1))
+    | [< 'Token.Number n1 ; ip_or_int=(parse_number n1) >] ->  ip_or_int
+    | [< 'Token.Lparen ; expr= parse_expr ; 'Token.Rparen >] -> expr
+    | [< 'Token.Not ; expr=parse_negation; >] ->  expr
+    | [< 'Token.Next ; expr = parse_expr; >] ->  new Ast.unext expr
+    | [< 'Token.Ident str ; expr = (parse_pred str); >] -> expr
+    | [<>] -> print_endline "end parsing primary"; new Ast.gg
 and parse_negation = parser
-    | [<'Token.Lparen ; e = parse_expr ; 'Token.Rparen >] -> Ast.Not(e)
-    | [<'Token.Ident str>] -> Ast.Not(Ast.Value(Ast.Bool(str)))
+    | [<'Token.Lparen ; e = parse_expr ; 'Token.Rparen >] -> new Ast.unot e
+    | [<'Token.Ident str>] -> new Ast.bmatch (new Ast.var str) (new Ast.boolean "false")
 and print_endline = 
     (fun x -> () )
-and parse_pred lhs = parser
-    | [< 'Token.Match; rhs=parse_primary >] -> print_endline "parsed_match"; Ast.Match(Ast.Value(Ast.Bool(lhs)),rhs)
-    | [< 'Token.NMatch; rhs=parse_primary >] -> print_endline "parsed_nmatch"; Ast.NMatch(Ast.Value(Ast.Bool(lhs)),rhs)
-    | [< 'Token.Assign; rhs=parse_primary >] -> print_endline "parsed_assignment"; Ast.Assign(Ast.Value(Ast.Bool(lhs)),rhs)
-    | [<>] -> Ast.Value(Ast.Bool(lhs))
+and parse_pred str = parser
+    | [< 'Token.Match; rhs=parse_primary >]  -> new Ast.bmatch ( new Ast.var str) rhs 
+    | [< 'Token.NMatch; rhs=parse_primary >] -> new Ast.bnmatch (new Ast.var str) rhs
+    | [< 'Token.Assign; rhs=parse_primary >] -> new Ast.bassign (new Ast.var str) rhs
+    | [<>] -> 
+        let lower = String.lowercase str in
+        match lower with 
+        | "true" -> new Ast.boolean "true"
+        | "false" -> new Ast.boolean "false"
+        | _ -> new Ast.bmatch (new Ast.var str) (new Ast.boolean "true")
 and parse_number n1 = parser 
     | [< 'Token.Dot ; 'Token.Number n2 ; 'Token.Dot ; 'Token.Number n3 ; 'Token.Dot; 'Token.Number n4;  ip=(parse_ip n1 n2 n3 n4) >] -> 
-Ast.IP(ip)
-    | [<>] -> Ast.Number(n1)
+    ip
+    | [<>] -> new Ast.integer n1
 and parse_ip n1 n2 n3 n4= parser
-    | [< 'Token.Div; 'Token.Number mask>] -> Ast.Masked(n1,n2,n3,n4,mask)
-    | [<>] -> Ast.Normal(n1,n2,n3,n4)
+    | [< 'Token.Div; 'Token.Number mask>] -> new Ast.ip n1 n2 n3 n4 mask
+    | [<>] -> new Ast.ip n1 n2 n3 n4 32
 and combine_binary op lhs rhs = match op with
-    | Token.Implies -> Ast.Implies(lhs,rhs); 
-    | Token.Plus -> Ast.Plus(lhs,rhs); 
-    | Token.Minus -> Ast.Minus(lhs,rhs);
-    | Token.Match -> Ast.Match(lhs,rhs) 
-    | Token.NMatch -> Ast.NMatch(lhs,rhs) 
-    | Token.Assign -> Ast.Assign(lhs,rhs)
-    | Token.And  -> Ast.And(lhs,rhs)
-    | Token.Or  -> Ast.Or(lhs,rhs)
-    | Token.BImplies -> Ast.BImplies(lhs,rhs)
-    | _ -> Ast.GG
+    | Token.Implies -> new Ast.bimplies lhs rhs ; 
+    | Token.Match -> new Ast.bmatch lhs rhs 
+    | Token.NMatch -> new Ast.bnmatch lhs rhs
+    | Token.Assign -> new Ast.bassign lhs rhs
+    | Token.And  -> new Ast.band lhs rhs
+    | Token.Or  -> new Ast.bor lhs rhs
+    | Token.BImplies -> new Ast.bbimplies lhs rhs
+    | _ -> new Ast.gg
 and parse_bin_rhs expr_prec lhs stream =
     match Stream.peek stream with
     (* If this is a binop, find its precedence. *)
@@ -91,50 +96,32 @@ and parse_expr = parser
             end;
         | _ -> lhs
     end;
-    | [<>] -> print_endline "failure pare_primary" ; Ast.Value(Ast.Bool("hello"))
+    | [<>] -> print_endline "failure pare_primary" ; new Ast.var "hello"
 
 
 let parse_precedence = parser
 | [< 'Token.Precedence; 'Token.Lparen; before = parse_expr; 'Token.Comma ; after = parse_expr; 'Token.Rparen >] 
     ->  
-        (*begin
-        print_endline "parsed_precedence" ; 
-        Ast.print_macro (Ast.Precedence(before,after)) ;  
-        end;*)
-        Ast.Precedence(before,after)
+        new Ast.precedence before after
 
-| [<>] -> print_endline "failure parse precedence" ; Ast.Error 
+| [<>] -> new Ast.unsupported
 
 let parse_reaction = parser
     | [< 'Token.Reaction; 'Token.Lparen; trigger = parse_expr; 'Token.Comma; policy =parse_expr;'Token.Comma ; deactivate = parse_expr; 'Token.Rparen >] 
-        ->  
-            (*begin
-            print_endline "parsed_invariant" ; 
-            Ast.print_macro (Ast.Reaction(trigger,policy,deactivate)) ;  
-            end;*)
-        Ast.Reaction(trigger,policy,deactivate)
-    | [<>] -> print_endline "failure parse invariant" ; Ast.Error
+        ->  new Ast.reaction trigger policy deactivate
+    | [<>] ->new Ast.unsupported
 
 
 let parse_invariant = parser
     [< 'Token.Invariant; 'Token.Lparen ; prop = parse_expr; 'Token.Rparen >] 
     ->  
-        (*begin
-        print_endline "parsed_invariant" ; 
-        Ast.print_macro (Ast.Invariant(prop)) ;  
-        end;*)
-        Ast.Invariant(prop)
-| [<>] -> print_endline "failure parse invariant" ; Ast.Error
+        new Ast.invariant prop
+| [<>] -> new Ast.unsupported
 
 let parse_justice = parser
     [< 'Token.Justice; 'Token.Lparen ; prop = parse_expr; 'Token.Rparen >] 
-    ->  
-        (*begin
-        print_endline "parsed_justice" ; 
-        Ast.print_macro (Ast.Justice(prop)) ;  
-        end;*)
-        Ast.Invariant(prop)
-| [<>] -> print_endline "failure parse invariant" ; Ast.Error
+    -> new Ast.justice prop 
+| [<>] -> new Ast.unsupported
 
 
 

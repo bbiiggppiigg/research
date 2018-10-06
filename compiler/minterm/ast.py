@@ -1,4 +1,22 @@
-from z3 import And
+from z3 import And , Int , Bool
+
+
+class VarTable:
+    table = dict()
+    @classmethod
+    def get(cls,name):
+        try:
+            return VarTable.table[name]
+        except :
+            raise Exception ("unknown variable %s"%name)
+    @classmethod
+    def insert(cls,name,typeinfo):
+        if(typeinfo == "bool"):
+            VarTable.table[name] = Bool(name)
+        else:
+            VarTable.table[name] = Int(name)
+
+    pass
 
 def debug(s):
     """
@@ -13,110 +31,191 @@ def dc(x):
     import copy
     return copy.deepcopy(x)
 
+class Expr:
+    pass
+class Var(Expr):
+    def __init__(self,name):
+        self.name = name
+    def __repr__(self):
+        return self.name
 
-class AST():
+   
+
+class AST(Expr):
     pass
 
-class BinOp(AST):
-    ast_type= None
-    left = None
-    right = None
-    
-    def __init__(self, ast_type ,left,right):
-        self.ast_type= ast_type
-        self.left = left
-        self.right = right
-        #debug(self)
+
+class predicate:
+    def __init__(self,ast_type,var,value):
+        self.ast_type = ast_type
+        self.var = var
+        self.value = value
     def __repr__(self):
-        return " %s ( %s ) ( %s ) "%(self.ast_type,self.left,self.right) 
+        return " %s (%s) (%s) " % (self.ast_type, self.var , self.value)
+    pass
 
-    
-    def gr1_repr(self):
-        fmt_str = "( (%s) %s (%s) )" 
-        symbol = None
-        if(self.ast_type == "And"):
-            symbol = "&&"
-        elif(self.ast_type == "Or"):
-            symbol = "||"
-        elif(self.ast_type == "Implies"):
-            symbol = "->"
-        elif(self.ast_type == "BImplies"):
-            symbol = "<->"
-        else:
-            raise Exception("Hi")
-        return fmt_str % (self.left.gr1_repr() , symbol ,self.right.gr1_repr()) 
-    def rewrite(self,rewrite_table): 
-        return BinOp(self.ast_type,self.left.rewrite(rewrite_table),self.right.rewrite(rewrite_table))
-    
-    def nnf(self):
-        #print "something = ",self
-        debug(self)
-        return BinOp(self.ast_type,self.left.nnf(),self.right.nnf())
-    def negate(self):
-        ret = None 
-        if (self.ast_type == "And"):
-            ret = BinOp("Or",self.left.negate(),self.right.negate())
-        elif (self.ast_type == "Or"):
-            ret = BinOp("And",self.left.negate(),self.right.negate())
-        elif (self.ast_type == "Implies"):
-            
-            #print "this branch, left negate = ",self.left.negate()
-            ret = BinOp("And",dc(self.left),self.right.negate())
 
-        elif (self.ast_type == "BImplies"):
-            left = BinOp("And",dc(self.left),self.right.negate())
-            right = BinOp("And",self.left.negate(),dc(self.right))
-            ret = BinOp("Or",left,right)
+class bge(predicate):
+    def __init__(self,var,value):
+        super("ge",var,value)
+
+class ble(predicate):
+    def __init__(self,var,value):
+        super("le",var,value)
+class bgeq(predicate):
+    def __init__(self,var,value):
+        super("geq",var,value)
+
+class bleq(predicate):
+    def __init__(self,var,value):
+        super("leq",var,value)
+
+class bassign(predicate):
+    def __init__(self,var,value):
+        super("assign",var,value)
+class bmatch(predicate):
+    def __init__(self,var,value):
+        super("match",var,value)
+
+class bnassign(predicate):
+    def __init__(self,var,value):
+        super("nassign",var,value)
+class bnmatch(predicate):
+    def __init__(self,var,value):
+        super("nmatch",var,value)
+
+class bop(object):
         
-        return ret
+    def __init__(self,ast_type,e1,e2):
+        self.ast_type = ast_type
+        self.left = e1
+        self.right = e2
+    
+    def get_predicates(self):
+        ret = []
+        ret += self.left.get_predicates()
+        ret += self.right.get_predicates()
+        return ret 
+    def __repr__ (self):
+        return "%s (%s) (%s)" % (self.ast_type, self.left , self.right)
 
-class UnaOp(AST):
     def gr1_repr(self):
+        lookup = {"and":"&&", "or" : "||" , "implies" : "->" , "bimplies" : "<->"}
+        return "( (%s) %s (%s) )"%(self.left.gr1_repr(),lookup[self.ast_type],self.right.gr1_repr())
+
+    def nnf(self):    
         
-        fmt_str = " ( %s (%s) ) "
-        symbol = None
-        if(self.ast_type == "Not"):
-            symbol = "!"
-        return fmt_str % (symbol,self.term.gr1_repr())
-    def __init__(self,ast_type,term):
-        self.ast_type= ast_type
-        self.term = term
+        reflect = {"and":band,"or":bor,"implies":bimplies,"bimplies":bbimplies}
+        return reflect[self.ast_type](self.left.nnf(),self.right.nnf())
 
-    def __repr__(self):
-        return " %s ( %s ) "%(self.ast_type,self.term) 
 
-    def rewrite(self,rewrite_table):
-        try:
-            return UnaOp(self.ast_type,self.term.rewrite(rewrite_table))
-        except Exception,e:
-            debug (e)
-            return self
-    def nnf(self):
-        debug(self)
-        if (self.ast_type == "Not"):
-            try:
-                self.term.negate().nnf()
-                return self.term.nnf()
-            except Exception,e:
-                debug(e)
-                return self
-        else:
-            return self.term.nnf()
+    def rewrite(self,table): 
+        
+        reflect = {"and":band,"or":bor,"implies":bimplies,"bimplies":bbimplies}
+        return reflect[self.ast_type](self.left.rewrite(table),self.right.rewrite(table))
+
+    @classmethod
+    def create(cls,ast_type,e1,e2):
+        reflect = {"and":band,"or":bor,"implies":bimplies,"bimplies":bbimplies}
+        return reflect[ast_type](e1,e2)
+
+class band(bop):
+    def __init__(self,e1,e2): 
+        super(band,self).__init__("and",e1,e2)
+    
     def negate(self):
-        import copy
-        if (self.ast_type == "Not"):
-            return copy.deepcopy(self.term)
-        elif(self.ast_type == "Next"):
-            return copy.deepcopy(self)
+        return bor(self.left.negate(),self.right.negate())    
+class bor(bop):
+    def __init__(self,e1,e2): 
+        super (bor,self).__init__("or",e1,e2)
+ 
+    def negate(self):
+        return band(self.left.negate(),self.right.negate())
+class bimplies(bop):
+    def __init__(self,e1,e2): 
+        super(bimplies,self).__init__("implies",e1,e2)
+    def negate(self):
+        return band(dc(self.left),self.right.negate())
+class bbimplies(bop):
+    def __init__(self,e1,e2): 
+        super(bbimplies,self).__init__("bimplies",e1,e2)
+        
+    def negate(self):
+        left =  band(dc(self.left),self.right.negate())
+        right =  band(self.left.negate(),dc(self.right))
+        return bor(left,right)
+
+
+
+class uop(object):
+        
+    def __init__(self,ast_type,e1):
+        self.ast_type = ast_type
+        self.left = e1
+    
+    def get_predicates(self):
+        ret = []
+        ret += self.left.get_predicates()
+        return ret 
+    def __repr__ (self):
+        return "%s (%s)" % (self.ast_type, self.left )
+
+    def gr1_repr(self):
+        lookup = {"next":"X", "not" : "!"}
+        return "( %s(%s) )"%(lookup[self.ast_type],self.left.gr1_repr())
+
+    def nnf(self):    
+        
+        reflect = {"next":unext}
+        if ( self.ast_type == "not" ) :
+            return self.left.negate().nnf()
+        else:
+            return reflect[self.ast_type](self.left.nnf())
+
+
+    def rewrite(self,table): 
+        
+        reflect = {"next":unext,"not":unot}
+        return reflect[self.ast_type](self.left.rewrite(table))
+
+    @classmethod
+    def create(cls,ast_type,e1):
+        reflect = {"next":unext,"not":unot}
+        return reflect[ast_type](e1)
+
+
+class unext(uop):
+    def __init__(self,e):
+        super(unext,self).__init__("next",e)
+    def negate(self):
+
+        return dc(self.left.negate())
+
+    pass
+
+class unot(uop):
+    def __init__(self,e):
+        super(unot,self).__init__("not",e)
+    
+    def negate(self):
+        return dc(self.left)
+    pass
+
+
+
+"""
+    Left hand side of the predicate must be a single var value 
+"""
 
 class Predicate(AST):
     
     LAST_ID = 0
     compl_dict = {
-            "Gt":"Leq","Geq":"Lt","Lt":"Geq","Leq":"Gt","Match":"NMatch","NMatch":"Match","Assign":"NAssign","NAssign":"Assign"
+            "gt":"leq","geq":"lt","lt":"geq","leq":"gt","match":"nmatch","nmatch":"match","assign":"nassign","Nnassign":"assign"
                 }
-    istr = "i%d"
-    ostr = "o%d"
+
+    def get_predicates(self):
+        return [self]
     def __hash__(self):
         return self.id
     
@@ -124,21 +223,13 @@ class Predicate(AST):
         return self.__repr__() == other.__repr__()
     
     def gr1_repr(self):
-        index = self.id
-        if(index > 0):
-            return self.fmt_str%index
-        else:
-            return "!"+ self.fmt_str%(-index)
-    def __init__(self,ast_type,left,right,input_vars,pid = None):
-        self.input_vars = input_vars
+        return "%d"%self.id
+    
+    def __init__(self,ast_type,left,right,pid = None):
         self.ast_type= ast_type
         self.left = left
         self.right = right
-        self.var = self.left.term
-        if(self.var not in input_vars):
-            self.fmt_str = Predicate.ostr
-        else:
-            self.fmt_str = Predicate.istr
+        self.var = self.left.name
         if(pid is not None):
             self.id = pid
         else:
@@ -152,54 +243,53 @@ class Predicate(AST):
             print "Die !!!"
 
     def toZ3(self,variables):
-        if( isinstance(self.left,Value)):
-            if(self.left.ast_type=="Bool"):
-                var = variables[self.left.term]
-                #print "var = ",var
-                if (isinstance(self.right,Value)):          
-                    if(isinstance(self.right.term,IP)):      # IP can only be matched, no comparison
-                        ip_instance = self.right.term
-                        ips = ip_instance.get_range()
-                        if(ip_instance.masked):
-                            return And(ips[0] <= var , var <= ips[1])
-                        else:
-                            return var == ips[0]
-                        
-                    else:                                    # Other type, Possibily Number
-                        if(isinstance(self.right.term,int)):
-                            if (self.ast_type == "Gt") :
-                               return  var > self.right.term 
-                            elif (self.ast_type == "Geq") :
-                               return  var >= self.right.term 
-                            elif (self.ast_type == "Lt") :
-                               return  var < self.right.term 
-                            elif (self.ast_type == "Leq") :
-                                return  var <= self.right.term 
-                            elif (self.ast_type == "Match"):
-                                return  var == self.right.term
-                            elif (self.ast_type == "NMatch"):
-                                return  var != self.right.term
-                            elif (self.ast_type == "NAssign"):
-                                return  var != self.right.term
-                            elif (self.ast_type == "Assign"):
-                                return var ==  self.right.term
-                            else:
-                                print "Error!!"
-                        #print "something else!!",self.right.term.__class__
-                else:
-                    return None
+        left = self.left
+        right = self.right
+        ast_type = self.ast_type
+        var = VarTable.get(left.name)
+        if (isinstance(right,IP)):
+            if(ast_type not in ["assign","nassign","match","nmatch"]):
+                raise Exception ("Unsupported Predicate Type for IP : %s "%ast_type)
+            ips = right.get_range()
+            if(ips[0] == ips[1]):
+                return And(var == ips[0])
+            else:
+                return And(ips[0] <= var , var <= ips[1])
+            pass
+        elif(isinstance(right,Integer) or isinstance(right,Boolean)):
+            if (ast_type == "gt") :
+               return  And(var > right.value)
+            elif (ast_type == "geq") :
+               return  And(var >= right.value )
+            elif (ast_type == "lt") :
+               return  And(var < right.value )
+            elif (ast_type == "leq") :
+                return  And(var <= right.value)
+            elif (ast_type == "match"):
+                return  And(var == right.value)
+            elif (ast_type == "nmatch"):
+                return  And(var != right.value)
+            elif (ast_type == "nassign"):
+                return  And(var != right.value)
+            elif (ast_type == "assign"):
+                return And(var ==  right.value)
+            else:
+                raise Exception("Unsupported ast type for value: %s "%ast_type)
         else:
-            print "Die!",self.right.__class__
+        
+            raise Exception("Unsupported ast type for value: %s "%ast_type)
+    
     def __repr__(self):
         return " %s ( %s ) ( %s ) "%(self.ast_type,self.left,self.right) 
+    
     def nnf(self):
         import copy
         return copy.deepcopy(self)
     
     def negate(self):
         new_type = Predicate.compl_dict[self.ast_type] 
-        return Predicate(new_type,self.left,self.right,self.input_vars,-self.id)   
-    
+        return Predicate(new_type,self.left,self.right,-self.id)   
+
 class Value(AST):
 
     def __init__(self,ast_type,term):
@@ -220,19 +310,49 @@ class Value(AST):
 def toN(text):
     return int(text)
 
-class IP:
+
+class Constant:
+    const_type= "const"
+    pass
+
+class Integer(Constant):
+    const_type = "int"
+    def __init__(self,value):
+        self.value = value
+    def __repr__(self):
+        return self.value
+    
+    def __eq__(self,other):
+        return (self.value == other.value)
+    
+    def __neq__(self,other):
+        return not(self.__eq__(other))
+
+
+class Boolean(Constant):
+    const_type = "bool"
+    def __init__(self,value):
+        self.value = value
+
+    def __repr__(self):
+        return self.value
+    
+    def __eq__(self,other):
+        return (self.value == other.value)
+    
+    def __neq__(self,other):
+        return not(self.__eq__(other))
+
+class IP(Constant):
+    const_type = "IP" 
+    format_string = "{n1:Num}.{n2:Num}.{n3:Num}.{n4:Num}/{mask:Num}" 
     def __init__(self,ip_str):
         #print ip_str.strip().split()
         def parse_ip_string(ip_str):
             #print ip_str
             from parse import parse
-            ip_type,ip_rest = ip_str.strip().split()
-            if(ip_type != "Masked"):
-                ip_rest += "/32"
-                self.masked = False 
-                
-            format_string = "{n1:Num}.{n2:Num}.{n3:Num}.{n4:Num}/{mask:Num}" 
-            res = parse(format_string,ip_rest,dict(Num=toN))
+               
+            res = parse(IP.format_string,ip_str,dict(Num=toN))
             return res
         
         def ip_to_range(n1,n2,n3,n4,mask=32):
@@ -250,11 +370,13 @@ class IP:
         n2 = res['n2'] 
         n3 = res['n3'] 
         n4 = res['n4'] 
-        self.address = "%d.%d.%d.%d"%(n1,n2,n3,n4)
+        
         self.mask = res['mask']
+        self.masked = (self.mask!=32)
+        
+        self.address = "%d.%d.%d.%d"%(n1,n2,n3,n4)
         
         self.min_value,self.max_value = ip_to_range(n1,n2,n3,n4,self.mask)
-
         #print self.address
 
     def __repr__(self):
@@ -271,19 +393,19 @@ class IP:
     def __neq__(self,other):
         return not(self.__eq__(other))
 def isBinary(ast_type):
-    bops = ["And","Or","Implies","BImplies"]
+    bops = ["and","or","implies","bimplies"]
     return ast_type in bops
 
 def isUnary(ast_type):
-    uops = ["Not","Next"]
+    uops = ["not","next"]
     return ast_type in uops
 
 def isValue(ast_type):
-    values = ["Value","Bool","Number","IP"]
+    values = ["value","bool","int","ip"]
     return ast_type in values
 
 def isPredicate(ast_type):
-    pops = ["NAssign","Assign","NMatch","Match","Gt","Lt","Geq","Leq"]
+    pops = ["nassign","assign","match","nmatch","gt","lt","geq","leq"]
     return ast_type in pops
 
 

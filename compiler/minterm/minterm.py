@@ -1,7 +1,7 @@
 #!/usr/bin/python
-from z3 import And, Or , Not,Int , Solver, sat ,simplify
-from parser import find_lparen, find_rparen , parse_args, parse_ip ,get_ip ,get_info,is_ip
-from ast import *
+from z3 import And , Not,Int ,Solver, sat ,simplify
+from parser import parse_macros
+from ast import bop,  VarTable
 from lookup import LookupTable 
 
 
@@ -25,26 +25,11 @@ input_vars = set(
             ])
 
 
-     
+for input_var in input_vars:
+    VarTable.insert(input_var,"int")
+         
 
 
-
-def parse_value(expr):
-    expr = expr.strip()
-    ast_type= expr.split()[0]
-    value = expr[len(ast_type):]
-    ret = None
-    print "ast_type = " , ast_type
-    if(ast_type == "Bool"):
-        ret = variables[value.strip()]
-    if(ast_type == "Number"):
-        ret = int(value)
-    if(ast_type == "IP"):
-        lparen = find_lparen(value)
-        rparen = find_rparen(value)
-        ip_str = value[lparen+1:rparen]
-        ret = parse_ip(ip_str)
-    return ret
 
 def getInitSolver():
     MAX_MAC = ((1<<48) -1)
@@ -59,137 +44,12 @@ def getInitSolver():
     return s
 
 
-def gen_value(value_string):
-    ast_type, args = get_info(expr)
-    if(ast_type == "Number"):
-        return int(args[0])
-    elif (ast_type == "Bool"):
-        return args[0]
-    elif (ast_type == "IP"):
-        return IP(args[0])
-
-
 """
 Return a list of predicates appear in the AST
 
 """
 
-def get_predicates(ast):
-    ret = []
-    if(ast.__class__ == Predicate):
-        ret += [ast]
-    elif(ast.__class__ == BinOp):
-        ret += get_predicates(ast.left)
-        ret += get_predicates(ast.right)
-    elif(ast.__class__ == UnaOp):
-        ret += get_predicates(ast.term)
 
-    return ret
-
-
-"""
-Recursively Generate AST from input expression string expr
-
-"""
-
-def gen_ast(expr):
-    ast_type, args = get_info(expr)
-    print ast_type
-    if(isPredicate(ast_type)):
-        return Predicate(ast_type,gen_ast(args[0]),gen_ast(args[1]),input_vars)
-    elif(isBinary(ast_type)):
-        return BinOp(ast_type,gen_ast(args[0]),gen_ast(args[1]))
-    elif(isUnary(ast_type)):
-        return UnaOp(ast_type,gen_ast(args[0]))
-    elif(isValue(ast_type)):
-        value_type, value_args = get_info(args[0])
-
-        if(value_type != "IP"):
-            #print "value_type = ",value_type
-            value_type, value_args = value_type.split()
-
-            if(value_type == "Bool"):
-                return Value(value_type,value_args)
-            elif(value_type == "Number"):
-                return Value (value_type,int(value_args))
-
-        elif(value_type == "IP"):
-            return Value (value_type,IP(value_args[0]))
-    else:
-        print "parsing something",ast_type
-
-
-
-def parse_expr(expr):
-    ast_type, args = get_info(expr)
-    print "ast_type = ",ast_type," args = ",args,"\n"
-    if(ast_type=="Value"):
-        return parse_value(args[0]) 
-    else:
-        if(ast_type == 'And'):
-            return And(parse_expr(args[0]),parse_expr(args[1]))
-        elif(ast_type == "BImplies"):
-            return (parse_expr(args[0]) == parse_expr(args[1]))
-        elif(ast_type == "Or"):
-            return Or(parse_expr(args[0]),parse_expr(args[1]))
-        elif(ast_type == "Not"):
-            return Not(parse_expr(args[0]))
-        elif(ast_type == "Match"):
-            if(is_ip(args[1])):
-                print "do something !"
-                left = parse_expr(args[0])
-                ips =  get_ip(args[1])
-                return And(left <= ips[0] , left >= ips[1])
-            else:
-                return(parse_expr(args[0])==parse_expr(args[1]))
-        elif(ast_type == "NMatch"):
-            if(is_ip(args[1])):
-                print "do something !"
-                left = parse_expr(args[0])
-                ips =  get_ip(args[1])
-                return Not(And(left <= ips[0] , left >= ips[1]))
-            else:
-                return(parse_expr(args[0])!=parse_expr(args[1]))
-        
-        elif(ast_type == "Assign"):
-            if(is_ip(args[1])):
-                print "do something !"
-                left = parse_expr(args[0])
-                ips =  get_ip(args[1])
-                return And(left <= ips[0] , left >= ips[1])
-            else:
-                print "Find Assignment !!!, transalte into predicate"
-                
-                print (parse_expr(args[0])==parse_expr(args[1]))
-                return(parse_expr(args[0])==parse_expr(args[1]))
-        else:
-            print "Un Supported Z3 !!"
-            exit(-1)
-
-
-class Invariant:
-    prop = None
-    ast = None
-    predicates = None
-    def __init__(self,prop):
-        self.prop = prop
-        #print "Prop = ",prop
-        self.prop_ast = gen_ast(prop).nnf()
-        #print "Original = ",self.prop_ast
-        #print "NNF      = ",self.prop_ast.nnf()
-        #self.prop_ast = self.prop_ast.nnf()
-        self.predicates = get_predicates(self.prop_ast)
-        print_ast(self.prop_ast) 
-
-    def rewrite(self,rewrite_table):
-        self.prop_ast = self.prop_ast.rewrite(rewrite_table)
-
-    def collect_gr1(self):
-        prop_str = self.prop_ast.gr1_repr()
-
-        return  [],[prop_str],[] 
-    def getPredicates(self):
-        return self.predicates
 
 class StateVar:
     LAST_ID = 0
@@ -206,146 +66,6 @@ class StateVar:
             return "(s%d)"%self.id
         else:
             return "(! s%d)"%(-self.id)
-
-
-class Reaction:
-
-    def collect_gr1(self):
-        init =  [self.triggered.negate().gr1_repr()]
-        triggered = self.triggered.gr1_repr()
-        terminate = self.terminate_ast.gr1_repr()
-        policy =self.policy_ast.gr1_repr()
-        trigger = self.trigger_ast.gr1_repr()
-        trans = [
-                "(%s | (%s & !%s)) <-> X(%s)"%(trigger,triggered,terminate,triggered),
-                "(%s)->(%s)"%(triggered,policy),
-                ]
-        return init, trans , []
-
-
-    def __init__(self,trigger,policy,terminate):
-        self.trigger = trigger
-        self.policy = policy
-        self.terminate = terminate
-
-        self.trigger_ast = gen_ast(self.trigger).nnf()
-        self.policy_ast = gen_ast(self.policy).nnf()
-        self.terminate_ast = gen_ast(self.terminate).nnf()
-
-        self.predicates = reduce(lambda a,b : a+b ,map( get_predicates, [self.trigger_ast,self.policy_ast,self.terminate_ast] ))
-        self.triggered = StateVar()
-        print self.predicates
-
-    def rewrite(self,rewrite_table):
-        self.trigger_ast = self.trigger_ast.rewrite(rewrite_table)
-        self.policy_ast = self.policy_ast.rewrite(rewrite_table)
-        self.terminater_ast = self.terminate_ast.rewrite(rewrite_table)
-
-    def toGR1(self):
-        ret = dict()
-        ret["init"]="!"+self.triggered;
-        ret["trans"]=(
-                [
-                    "(%s | (%s & !%s)) <-> X(%s)"%(self.trigger,self.triggered,self.terminate,self.triggered),
-                    "%s->%s"%(self.triggered,self.policy),
-                    ]
-                )
-        return ret
-
-    def toZ3(self):
-        return [parse_expr(self.trigger),parse_expr(self.policy),parse_expr(self.terminate)]
-
-    def getPredicates(self):
-        return self.predicates
-    #return [self.trigger,self.policy,self.terminate]
-
-class Justice:
-
-    def __init__(self,prop):
-        self.prop = prop
-
-    def toGR1(self):
-        ret = dict()
-        ret["liveness"]=self.prop
-        return ret
-    def toZ3(self):
-        return [parse_expr(self.prop)]
-    def getPredicates(self):
-        return [self.prop]
-
-class Precedence:
-
-    def __init__(self,before,after):
-        self.before = before
-        self.after = after
-        self.happened = before+"ed"
-
-    def toGR1(self):
-        ret = dict()
-        ret["init"]= ("!%s & !%s"%(self.after,self.happened)) 
-        ret["trans"]=(
-                [
-                    "(!%s & !%s) -> X(!%s)"%(self.happened,self.after,self.happened),
-                    "%s -> X(%s)"%(self.before,self.happened),
-                    "!%s -> !%s"%(self.happened,self.after),
-                    "%s -> X(%s)"%(self.happened,self.happened)
-                    ]
-                )
-        return ret
-
-    def toZ3(self):
-        return [parse_expr(self.before),parse_expr(self.after)]
-    def getPredicates(self):
-        return [self.before,self.after]
-
-
-
-
-def parse_precedence(macro):
-    print "parsing precedence"
-    #inner = macro[lpar1+1:rpar1]
-    args = parse_args(macro)
-    #print args
-    return Precedence(args[0],args[1])
-#print macro
-    #print inner
-    #parse_expr(inner)
-
-
-
-def parse_invariant(macro):
-    print "parsing invariant"
-    args =  parse_args(macro)
-    #print "args=  ",macro
-    #print args
-    return Invariant(args[0])
-#print macro
-    #print inner
-    #parse_expr(inner)
-
-def parse_reaction(macro):
-    print "parsing reaction"
-    args = parse_args(macro)
-    print args
-    return Reaction(args[0],args[1],args[2])
-
-def generate_macros(filename):
-    ret = list()
-    with open(filename) as f:
-        macros = f.readlines()
-        for macro in macros:
-            #print macro.strip()
-            if(str.startswith(macro,"Invariant")):
-                ret.append(parse_invariant(macro))
-            #if(str.startswith(macro,"Justice")):
-            #    print "parse_justice"
-            if(str.startswith(macro,"Reaction")):
-                print "parse_reaction"
-                ret.append(parse_reaction(macro))
-            if(str.startswith(macro,"Precedence")):
-                print "parse_precedence"
-                ret.append(parse_precedence(macro))
-    return ret
 
 
 def check_sat(cond1,cond2):
@@ -410,11 +130,11 @@ def recurse_with_solver(solver,var,sofar,preds,depth,bitlist,minterms):
 
 
 def conjuncts(a,b):
-    return BinOp("And",a,b)
+    return bop.create("and",a,b)
 
 
 def disjuncts(a,b):
-    return BinOp("Or",a,b)
+    return bop.create("or",a,b)
 
 
 """
@@ -489,6 +209,19 @@ def write_gr1(macros,predicates,output_file):
         f.write(spec)
 
 
+def parse_declaration(filename):
+    with open(filename) as f:
+        lines = f.readlines()
+
+    for line in lines:
+        var_type, var_name = line.strip().split()
+        if "=" in var_name:
+            var_name, var_value = var_name.split("=")
+            print var_type, var_name , var_value 
+        else:
+            print var_type, var_name
+        VarTable.insert(var_name,var_type)
+
 
 class Minterm():
     ID = 0
@@ -499,8 +232,8 @@ def main():
     import sys
 
 
-    if len(sys.argv)  < 3:
-        print "usage : check_dependency.py <ast_filename> <structured_slugs_filename>"
+    if len(sys.argv)  < 4:
+        print "usage : check_dependency.py <declaration> <ast_filename> <structured_slugs_filename>"
         exit(-1)
     else:
         #print sys.argv[1]
@@ -510,8 +243,12 @@ def main():
             predicates[var] = list()
             per_var_minterms[var] = list() 
 
-
-        macros = generate_macros(sys.argv[1])
+        declare_in = sys.argv[1] 
+        parse_declaration(declare_in)
+        ast_in = sys.argv[2]
+        slug_out = sys.argv[3]
+        
+        macros = parse_macros(ast_in)
         """
             1. Collect from each macro the expressions that we need to examine,
                so 1 for invaraints and justice, 2 for precedence and 3 for reaction
@@ -588,7 +325,7 @@ def main():
                 print "predicate = ", pred ," predicate id  = " ,pred.id
         for macro in macros:
             macro.rewrite(rewrite_table)
-        write_gr1(macros,predicates,sys.argv[2])
+        write_gr1(macros,predicates,slug_out)
         
         dump_table = LookupTable(variables,input_vars,predicates)
         with open("test.db", "wb" ) as f:
