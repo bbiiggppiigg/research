@@ -18,6 +18,10 @@ and print_endline =
 and parse_pred str = parser
     | [< 'Token.Match; rhs=parse_primary >]  -> new Ast.bmatch ( new Ast.var str) rhs 
     | [< 'Token.NMatch; rhs=parse_primary >] -> new Ast.bnmatch (new Ast.var str) rhs
+    | [< 'Token.Gt; rhs=parse_primary >] -> new Ast.bgt (new Ast.var str) rhs
+    | [< 'Token.Geq; rhs=parse_primary >] -> new Ast.bgeq (new Ast.var str) rhs
+    | [< 'Token.Lt; rhs=parse_primary >] -> new Ast.blt (new Ast.var str) rhs
+    | [< 'Token.Leq; rhs=parse_primary >] -> new Ast.bleq (new Ast.var str) rhs
     | [< 'Token.Assign; rhs=parse_primary >] -> new Ast.bassign (new Ast.var str) rhs
     | [<>] -> 
         let lower = String.lowercase str in

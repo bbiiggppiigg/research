@@ -1,19 +1,17 @@
 [INPUT]
-i1
-i3
+ip4Src@0.0.3
+ip4Src@1
 
 [OUTPUT]
-o2
-o4
+Port@0.0.3
+Port@1
 
 [SYS_TRANS]
-| ! | & i1 ! i3 & i1 i3 | & o2 ! o4 & o2 o4
-| ! | & ! i1 i3 & i1 i3 | & ! o2 o4 & o2 o4
+| ! $ 1 & ! ip4Src@1 & ! ip4Src@0.0.3 1 $ 1 & ! Port@1 & ! Port@0.0.3 1
+| ! $ 1 & ! ip4Src@1 & ! ^ ip4Src@0.0.3 1 1 $ 1 & ! Port@1 & ! ^ Port@0.0.3 1 1
 
 [SYS_INIT]
 
-o2
-o4
 
 [ENV_LIVENESS]
 

@@ -47,14 +47,14 @@ class predicate ast_type variable const_value = object
         Printf.sprintf "( %s %s %s )" ast_type var#__repr__ const_value#__repr__
 end;;
 
-class bge  variable const_value  = object
-    inherit predicate "ge" variable const_value
+class bgt  variable const_value  = object
+    inherit predicate "gt" variable const_value
 end;;
 class bgeq  variable const_value  = object
     inherit predicate "geq" variable const_value
 end;;
-class ble  variable const_value  = object
-    inherit predicate "le" variable const_value
+class blt  variable const_value  = object
+    inherit predicate "lt" variable const_value
 end;;
 class bleq variable const_value  = object
     inherit predicate "leq" variable const_value

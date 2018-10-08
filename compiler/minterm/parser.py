@@ -1,7 +1,6 @@
-from z3 import And , Not , Or 
-from ast import IP , VarTable , isPredicate, isBinary, isUnary, isValue,Var
+from ast import IP , Z3VarTable , isPredicate, isBinary, isUnary, isValue,Var
 from ast import Integer, Boolean
-from ast import  uop, Predicate, bop
+from ast import  Uop, PredicateTable, Bop
 from macro import Precedence, Invariant, Reaction 
 
 def ip_to_range(n1,n2,n3,n4,mask=32):
@@ -85,7 +84,7 @@ Recursively Generate AST from input expression string expr
 """
 
 def gen_const(ast_type,args):
-    print ast_type , args
+    print "gen const , ast_type = ",ast_type , "args = ", args
     if ast_type == "ip":
         return IP(args)
     elif ast_type == "int":
@@ -95,108 +94,26 @@ def gen_const(ast_type,args):
     return None
 
 
+
 def gen_ast(expr):
-    print "gen ast"
+    #print "gen ast"
     ast_type, args = get_info(expr)
-    print "type = ",ast_type, "args = ",args
+    print "gen_ast type = ",ast_type, "args = ",args
     if (ast_type == "var"):
-        return Var(args[0])
+        return Z3VarTable.getvar(args[0])
     elif(isPredicate(ast_type)):
-        return Predicate(ast_type,gen_ast(args[0]),gen_ast(args[1]))
+        print "inserting predicate"  
+        return PredicateTable.insert(ast_type,gen_ast(args[0]),gen_ast(args[1]))
+        #return Predicate.create(ast_type,gen_ast(args[0]),gen_ast(args[1]))
     elif(isBinary(ast_type)):
-        return bop.create(ast_type,gen_ast(args[0]),gen_ast(args[1]))
+        return Bop.create(ast_type,gen_ast(args[0]),gen_ast(args[1]))
     elif(isUnary(ast_type)):
-        return uop.create(ast_type,gen_ast(args[0]))
+        return Uop.create(ast_type,gen_ast(args[0]))
     elif(isValue(ast_type)):
         return gen_const(ast_type,args[0])
     else:
         raise Exception ("Parsing Ast, get %s"%ast_type)
 
-def parse_value(expr):
-    print "Parse Value"
-    print expr 
-    print get_info(expr)
-    expr = expr.strip()
-    ast_type= expr.split()[0]
-    value = expr[len(ast_type):]
-    ret = None
-    print "ast_type = " , ast_type
-    if(ast_type == "Bool"):
-        varname = value.strip()
-        ret = VarTable.get(varname)
-    if(ast_type == "Number"):
-        ret = int(value)
-    if(ast_type == "IP"):
-        lparen = find_lparen(value)
-        rparen = find_rparen(value)
-        ip_str = value[lparen+1:rparen]
-        ret = parse_ip(ip_str)
-    return ret
-
-
-
-# Used by the Z3 Solver subprocess;
-def parse_expr(expr):
-    print "QQ"
-    ast_type, args = get_info(expr)
-    print "ast_type = ",ast_type," args = ",args,"\n"
-    if(ast_type=="Value"):
-        return parse_value(args[0]) 
-    else:
-        if(ast_type == 'And'):
-            return And(parse_expr(args[0]),parse_expr(args[1]))
-        elif(ast_type == "BImplies"):
-            return (parse_expr(args[0]) == parse_expr(args[1]))
-        elif(ast_type == "Or"):
-            return Or(parse_expr(args[0]),parse_expr(args[1]))
-        elif(ast_type == "Not"):
-            return Not(parse_expr(args[0]))
-        elif(ast_type == "Match"):
-            if(is_ip(args[1])):
-                print "do something !"
-                left = parse_expr(args[0])
-                ips =  get_ip(args[1])
-                return And(left <= ips[0] , left >= ips[1])
-            else:
-                return(parse_expr(args[0])==parse_expr(args[1]))
-        elif(ast_type == "NMatch"):
-            if(is_ip(args[1])):
-                print "do something !"
-                left = parse_expr(args[0])
-                ips =  get_ip(args[1])
-                return Not(And(left <= ips[0] , left >= ips[1]))
-            else:
-                return(parse_expr(args[0])!=parse_expr(args[1]))
-        
-        elif(ast_type == "Assign"):
-            if(is_ip(args[1])):
-                print "do something !"
-                left = parse_expr(args[0])
-                ips =  get_ip(args[1])
-                return And(left <= ips[0] , left >= ips[1])
-            else:
-                print "Find Assignment !!!, transalte into predicate"
-                
-                print (parse_expr(args[0])==parse_expr(args[1]))
-                return(parse_expr(args[0])==parse_expr(args[1]))
-        else:
-            print "Un Supported Z3 !!"
-            exit(-1)
-
-def get_predicates(ast):
-    #ret = []
-    return ast.get_predicates()
-    """
-    if(ast.__class__ == Predicate):
-        ret += [ast]
-    elif(ast.__class__ == BinOp):
-        ret += get_predicates(ast.left)
-        ret += get_predicates(ast.right)
-    elif(ast.__class__ == UnaOp):
-        ret += get_predicates(ast.term)
-
-    return ret
-    """
 
 
 
@@ -206,19 +123,26 @@ def parse_precedence(macro):
     return Precedence(args[0],args[1])
 
 def parse_invariant(macro):
-    print "parsing invariant"
+    #print "parsing invariant"
     args =  parse_args(macro)
-    print args
+    #print args
     prop  = args[0]
     prop_ast = gen_ast(prop)#.nnf()
-    predicates = get_predicates(prop_ast)
-    return Invariant(prop_ast,predicates)
+    return Invariant(prop_ast)
 
 def parse_reaction(macro):
     print "parsing reaction"
     args = parse_args(macro)
-    print args
-    return Reaction(args[0],args[1],args[2])
+    trigger = args[0]
+    policy = args[1]
+    terminate = args[2]
+    trigger_ast = gen_ast(trigger)
+    policy_ast = gen_ast(policy)
+    terminate_ast = gen_ast(terminate)
+    print "trigger_ast = ",trigger_ast
+    print "policy_ast = ",policy_ast
+    print "terminate_ast = ",terminate_ast
+    return Reaction(trigger_ast,policy_ast,terminate_ast)
 
 def parse_macros(filename):
     ret = list()

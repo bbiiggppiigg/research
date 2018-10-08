@@ -1,6 +1,6 @@
 #!/bin/bash
-fname="simplest"
-#fname="block"
+#fname="simplest"
+fname="block"
 path="example/"$fname"/$fname"
 ./compiler $path".txt" > $path".ast"
 ./minterm.py $path".decl" $path".ast" $path".structured_slugs" 

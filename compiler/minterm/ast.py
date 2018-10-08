@@ -1,20 +1,99 @@
-from z3 import And , Int , Bool
+from z3 import And , Int , Bool, Or
 
 
-class VarTable:
+class PredicateTable:
     table = dict()
     @classmethod
-    def get(cls,name):
+    def get(cls,pred):
         try:
-            return VarTable.table[name]
-        except :
-            raise Exception ("unknown variable %s"%name)
+            return PredicateTable.table[pred.var][pred]
+        except:
+            raise Exception ("Unknown Predicate : %s "%pred)
+        pass
+    
     @classmethod
-    def insert(cls,name,typeinfo):
+    def insert(cls,ast_type,var,value):
+        print "doing insertion", type(value)
+        if (var not in PredicateTable.table):
+            PredicateTable.table[var] = list()
+        
+        for pred in PredicateTable.table[var]:
+            if(pred.ast_type == ast_type and pred.var == var and pred.value == value):
+                return pred
+        pred= Predicate.create(ast_type,var,value)
+        PredicateTable.table[var].append(pred)
+        #print "return value = ",pred
+        return pred 
+        pass
+
+    @classmethod
+    def insert_negation(cls,ast_type,var,value,pid):
+        for pred in cls.table[var]:
+            if(pred.ast_type == ast_type and pred.var == var and pred.value == value):
+                return pred
+        pred= Predicate.create(ast_type,var,value,-pid)
+        cls.table[var].append(pred)
+        #print "return value = ",pred
+        return pred 
+        pass
+
+
+
+    @classmethod
+    def get_all(cls):
+        ret = list()
+        for var in PredicateTable.table:
+            for predicate in PredicateTable.table[var]:
+                ret.append(predicate)
+        return ret
+
+    @classmethod
+    def dump(cls):
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        print "Printing              Predicates"
+        print "================================"
+        for var in cls.table:
+            for predicate in cls.table[var]:
+                print "%-*s        %-*s"%(10,var,10,predicate)
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 
+
+
+
+class Z3VarTable:
+    z3table = dict()
+    vartable= dict()
+    @classmethod
+    def get(cls,var):
+        try:
+            return Z3VarTable.z3table[var]
+        except :
+            raise Exception ("unknown variable %s"%var)
+    @classmethod
+    def insert(cls,name,typeinfo,is_input = False):
+        if ( name in Z3VarTable.vartable):
+            return Z3VarTable.vartable[name]
+        var = Var(name,typeinfo,is_input)
+        Z3VarTable.vartable[name]=var
+        
         if(typeinfo == "bool"):
-            VarTable.table[name] = Bool(name)
+            Z3VarTable.z3table[var] = Bool(name)
         else:
-            VarTable.table[name] = Int(name)
+            Z3VarTable.z3table[var] = Int(name)
+        
+        return var
+    @classmethod
+    def getvar(cls,name):
+        return Z3VarTable.vartable[name]
+   
+   
+    @classmethod
+    def dump(cls):
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        print "Printing              Predicates"
+        print "================================"
+        for var in cls.z3table:
+                print "%-*s"%(10,var)
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 
 
     pass
 
@@ -33,58 +112,212 @@ def dc(x):
 
 class Expr:
     pass
+
+class StateVar:
+    LAST_ID = 0
+    def __init__(self,index = None):
+        if(index is not None):
+            self.id = index
+        else:
+            StateVar.LAST_ID+=1
+            self.id = StateVar.LAST_ID
+    def negate(self):
+        return StateVar(-self.id)
+    def gr1_repr(self):
+        if(self.id > 0):
+            return "(s%d)"%self.id
+        else:
+            return "(! s%d)"%(-self.id)
+
+
+
 class Var(Expr):
-    def __init__(self,name):
+    def __init__(self,name,ast_type,is_input=False):
         self.name = name
+        self.ast_type = ast_type
+        self.is_input = is_input
+    
     def __repr__(self):
         return self.name
+    
+    def __eq__(self,other):
+        return self.name == other.name
 
-   
+    def __hash__(self):
+        return self.name.__hash__()
+  
 
 class AST(Expr):
     pass
 
 
-class predicate:
-    def __init__(self,ast_type,var,value):
+class Predicate(object):
+    LAST_ID = 0
+
+   
+    
+    def __init__(self,ast_type,var,value,pid = None):
         self.ast_type = ast_type
         self.var = var
         self.value = value
+        if(pid is not None):
+            self.id = -pid
+        else:
+           Predicate.LAST_ID +=1
+           self.id = Predicate.LAST_ID
     def __repr__(self):
         return " %s (%s) (%s) " % (self.ast_type, self.var , self.value)
-    pass
+
+    def get_predicates(self):
+        return [self]
+    def __hash__(self):
+        return self.id
+    
+    def __eq__(self,other):
+        return self.__repr__() == other.__repr__()
+    
+    def gr1_repr(self):
+        from minterm import PredicateMintermMap,disjuncts
+        #print "minterm_list = ",PredicateMintermMap.table[self]
+        ret = reduce(disjuncts,PredicateMintermMap.table[self])
+        return ret.gr1_repr()
+
+   
+    def rewrite(self,rewrite_table):
+        return rewrite_table[self]
+  
+    def nnf(self):
+        import copy
+        return copy.deepcopy(self)
+    
+    def negate(self):
+        compl_dict = {
+                "gt":Bleq,"geq":Blt,"lt":Bgeq,"leq":Bgt,"match":Bnmatch,"nmatch":Bmatch,"assign":Bnassign,"nassign":Bassign }
+        #print self.ast_type, type(self.ast_type)
+        return PredicateTable.insert_negation(compl_dict[self.ast_type].ast_type,self.var,self.value,self.id)
+        #return compl_dict[self.ast_type](self.var,self.value,self.id)   
+
+    @classmethod
+    def create(cls,ast_type,var,value,pid = None):
+        reflect = {"gt":Bgt,"lt":Blt,"geq":Bgeq,"leq":Bleq,"match":Bmatch,"nmatch":Bnmatch,"assign":Bassign,"nassign":Bnassign} 
+        return reflect[ast_type](var,value,pid)
+
+class Bgt(Predicate):
+    ast_type = "gt"
+    def __init__(self,var,value,pid = None):
+        super(Bgt,self).__init__("gt",var,value, pid)
+
+    def toZ3(self):
+        return (Z3VarTable.get(self.var) > self.value.value)
+
+class Blt(Predicate):
+    ast_type = "lt"
+    def __init__(self,var,value, pid = None ):
+        super(Blt,self).__init__("le",var,value, pid  )
+    
+    def toZ3(self):
+        return (Z3VarTable.get(self.var) < self.value.value)
 
 
-class bge(predicate):
-    def __init__(self,var,value):
-        super("ge",var,value)
 
-class ble(predicate):
-    def __init__(self,var,value):
-        super("le",var,value)
-class bgeq(predicate):
-    def __init__(self,var,value):
-        super("geq",var,value)
+class Bgeq(Predicate):
+    ast_type = "geq"
+    def __init__(self,var,value, pid = None ):
+        super(Bgeq,self).__init__("geq",var,value, pid  )
+    
+    def toZ3(self):
+        return (Z3VarTable.get(self.var) >= self.value.value)
 
-class bleq(predicate):
-    def __init__(self,var,value):
-        super("leq",var,value)
 
-class bassign(predicate):
-    def __init__(self,var,value):
-        super("assign",var,value)
-class bmatch(predicate):
-    def __init__(self,var,value):
-        super("match",var,value)
+class Bleq(Predicate):
+    ast_type = "leq"
+    def __init__(self,var,value, pid = None ):
+        super(Bleq,self).__init__("leq",var,value,pid)
+    
+    def toZ3(self):
+        return (Z3VarTable.get(self.var) <= self.value.value)
 
-class bnassign(predicate):
-    def __init__(self,var,value):
-        super("nassign",var,value)
-class bnmatch(predicate):
-    def __init__(self,var,value):
-        super("nmatch",var,value)
 
-class bop(object):
+class Bassign(Predicate):
+    ast_type = "assign"
+    def __init__(self,var,value, pid = None ):
+        super(Bassign,self).__init__("assign",var,value,pid)
+    
+    def toZ3(self):
+        var = Z3VarTable.get(self.var)
+        if ( isinstance(self.value, IP)):
+            ips = self.value.get_range()
+            return And(var >= ips[0] , var <= ips[1]) 
+        return (var == self.value.value)
+        
+    def gr1_repr(self):
+        if(self.var.ast_type == "bool"):
+            return "(%s = %s)"%(self.var,self.value)
+        else:
+            return super(Bassign,self).gr1_repr()
+
+class Bmatch(Predicate):
+    ast_type = "match"
+    def __init__(self,var,value, pid = None ):
+        super(Bmatch,self).__init__("match",var,value,pid)
+    
+    def toZ3(self):
+        var = Z3VarTable.get(self.var)
+        if ( isinstance(self.value, IP)):
+            ips = self.value.get_range()
+            return And(var >= ips[0] , var <= ips[1]) 
+        
+        print "qq ",self ,"type = ",self.value
+        return (var == self.value.value)
+    def gr1_repr(self):
+        if(self.var.ast_type == "bool"):
+            return "(%s = %s)"%(self.var,self.value)
+        else:
+            return super(Bmatch,self).gr1_repr()
+
+
+
+class Bnassign(Predicate):
+    ast_type = "nassign"
+    def __init__(self,var,value, pid = None ):
+        super(Bnassign,self).__init__("nassign",var,value,pid)
+    
+    def toZ3(self):
+        var = Z3VarTable.get(self.var)
+        if ( isinstance(self.value, IP)):
+            ips = self.value.get_range()
+            return Or(var < ips[0] , var > ips[1]) 
+
+        return (var != self.value.value)
+    def gr1_repr(self):
+        if(self.var.ast_type == "bool"):
+            return "(%s != %s)"%(self.var,self.value)
+        else:
+            return super(Bnassign,self).gr1_repr()
+
+
+
+class Bnmatch(Predicate):
+    ast_type = "nmatch"
+    def __init__(self,var,value, pid = None ):
+        super(Bnmatch,self).__init__("nmatch",var,value,pid)
+    
+    def toZ3(self):
+        var = Z3VarTable.get(self.var)
+        if ( isinstance(self.value, IP)):
+            ips = self.value.get_range()
+            return Or(var < ips[0] , var > ips[1]) 
+
+        return (var != self.value.value)
+    def gr1_repr(self):
+        if(self.var.ast_type == "bool"):
+            return "(%s != %s)"%(self.var,self.value)
+        else:
+            return super(Bnmatch,self).gr1_repr()
+
+
+
+class Bop(object):
         
     def __init__(self,ast_type,e1,e2):
         self.ast_type = ast_type
@@ -105,49 +338,49 @@ class bop(object):
 
     def nnf(self):    
         
-        reflect = {"and":band,"or":bor,"implies":bimplies,"bimplies":bbimplies}
+        reflect = {"and":Band,"or":Bor,"implies":Bimplies,"bimplies":Bbimplies}
         return reflect[self.ast_type](self.left.nnf(),self.right.nnf())
 
 
     def rewrite(self,table): 
         
-        reflect = {"and":band,"or":bor,"implies":bimplies,"bimplies":bbimplies}
+        reflect = {"and":Band,"or":Bor,"implies":Bimplies,"bimplies":Bbimplies}
         return reflect[self.ast_type](self.left.rewrite(table),self.right.rewrite(table))
 
     @classmethod
     def create(cls,ast_type,e1,e2):
-        reflect = {"and":band,"or":bor,"implies":bimplies,"bimplies":bbimplies}
+        reflect = {"and":Band,"or":Bor,"implies":Bimplies,"bimplies":Bbimplies}
         return reflect[ast_type](e1,e2)
 
-class band(bop):
+class Band(Bop):
     def __init__(self,e1,e2): 
-        super(band,self).__init__("and",e1,e2)
+        super(Band,self).__init__("and",e1,e2)
     
     def negate(self):
-        return bor(self.left.negate(),self.right.negate())    
-class bor(bop):
+        return Bor(self.left.negate(),self.right.negate())    
+class Bor(Bop):
     def __init__(self,e1,e2): 
-        super (bor,self).__init__("or",e1,e2)
+        super (Bor,self).__init__("or",e1,e2)
  
     def negate(self):
-        return band(self.left.negate(),self.right.negate())
-class bimplies(bop):
+        return Band(self.left.negate(),self.right.negate())
+class Bimplies(Bop):
     def __init__(self,e1,e2): 
-        super(bimplies,self).__init__("implies",e1,e2)
+        super(Bimplies,self).__init__("implies",e1,e2)
     def negate(self):
-        return band(dc(self.left),self.right.negate())
-class bbimplies(bop):
+        return Band(dc(self.left),self.right.negate())
+class Bbimplies(Bop):
     def __init__(self,e1,e2): 
-        super(bbimplies,self).__init__("bimplies",e1,e2)
+        super(Bbimplies,self).__init__("bimplies",e1,e2)
         
     def negate(self):
-        left =  band(dc(self.left),self.right.negate())
-        right =  band(self.left.negate(),dc(self.right))
-        return bor(left,right)
+        left =  Band(dc(self.left),self.right.negate())
+        right =  Band(self.left.negate(),dc(self.right))
+        return Bor(left,right)
 
 
 
-class uop(object):
+class Uop(object):
         
     def __init__(self,ast_type,e1):
         self.ast_type = ast_type
@@ -166,7 +399,7 @@ class uop(object):
 
     def nnf(self):    
         
-        reflect = {"next":unext}
+        reflect = {"next":Unext}
         if ( self.ast_type == "not" ) :
             return self.left.negate().nnf()
         else:
@@ -175,27 +408,27 @@ class uop(object):
 
     def rewrite(self,table): 
         
-        reflect = {"next":unext,"not":unot}
+        reflect = {"next":Unext,"not":Unot}
         return reflect[self.ast_type](self.left.rewrite(table))
 
     @classmethod
     def create(cls,ast_type,e1):
-        reflect = {"next":unext,"not":unot}
+        reflect = {"next":Unext,"not":Unot}
         return reflect[ast_type](e1)
 
 
-class unext(uop):
+class Unext(Uop):
     def __init__(self,e):
-        super(unext,self).__init__("next",e)
+        super(Unext,self).__init__("next",e)
     def negate(self):
 
         return dc(self.left.negate())
 
     pass
 
-class unot(uop):
+class Unot(Uop):
     def __init__(self,e):
-        super(unot,self).__init__("not",e)
+        super(Unot,self).__init__("not",e)
     
     def negate(self):
         return dc(self.left)
@@ -206,110 +439,6 @@ class unot(uop):
 """
     Left hand side of the predicate must be a single var value 
 """
-
-class Predicate(AST):
-    
-    LAST_ID = 0
-    compl_dict = {
-            "gt":"leq","geq":"lt","lt":"geq","leq":"gt","match":"nmatch","nmatch":"match","assign":"nassign","Nnassign":"assign"
-                }
-
-    def get_predicates(self):
-        return [self]
-    def __hash__(self):
-        return self.id
-    
-    def __eq__(self,other):
-        return self.__repr__() == other.__repr__()
-    
-    def gr1_repr(self):
-        return "%d"%self.id
-    
-    def __init__(self,ast_type,left,right,pid = None):
-        self.ast_type= ast_type
-        self.left = left
-        self.right = right
-        self.var = self.left.name
-        if(pid is not None):
-            self.id = pid
-        else:
-            self.id = Predicate.LAST_ID +1
-            Predicate.LAST_ID += 1
-    
-    def rewrite(self,rewrite_table):
-        if(self in rewrite_table):
-            return rewrite_table[self]
-        else:
-            print "Die !!!"
-
-    def toZ3(self,variables):
-        left = self.left
-        right = self.right
-        ast_type = self.ast_type
-        var = VarTable.get(left.name)
-        if (isinstance(right,IP)):
-            if(ast_type not in ["assign","nassign","match","nmatch"]):
-                raise Exception ("Unsupported Predicate Type for IP : %s "%ast_type)
-            ips = right.get_range()
-            if(ips[0] == ips[1]):
-                return And(var == ips[0])
-            else:
-                return And(ips[0] <= var , var <= ips[1])
-            pass
-        elif(isinstance(right,Integer) or isinstance(right,Boolean)):
-            if (ast_type == "gt") :
-               return  And(var > right.value)
-            elif (ast_type == "geq") :
-               return  And(var >= right.value )
-            elif (ast_type == "lt") :
-               return  And(var < right.value )
-            elif (ast_type == "leq") :
-                return  And(var <= right.value)
-            elif (ast_type == "match"):
-                return  And(var == right.value)
-            elif (ast_type == "nmatch"):
-                return  And(var != right.value)
-            elif (ast_type == "nassign"):
-                return  And(var != right.value)
-            elif (ast_type == "assign"):
-                return And(var ==  right.value)
-            else:
-                raise Exception("Unsupported ast type for value: %s "%ast_type)
-        else:
-        
-            raise Exception("Unsupported ast type for value: %s "%ast_type)
-    
-    def __repr__(self):
-        return " %s ( %s ) ( %s ) "%(self.ast_type,self.left,self.right) 
-    
-    def nnf(self):
-        import copy
-        return copy.deepcopy(self)
-    
-    def negate(self):
-        new_type = Predicate.compl_dict[self.ast_type] 
-        return Predicate(new_type,self.left,self.right,-self.id)   
-
-class Value(AST):
-
-    def __init__(self,ast_type,term):
-        self.ast_type= ast_type
-        self.term = term
-    def __repr__(self):
-        return " %s ( %s )  "%(self.ast_type,self.term) 
-   
-    def gr1_repr(self):
-        return self.term
-
-    def rewrite(self,_):
-        return self
-
-    def nnf(self):
-        return self
-
-def toN(text):
-    return int(text)
-
 
 class Constant:
     const_type= "const"
@@ -335,7 +464,7 @@ class Boolean(Constant):
         self.value = value
 
     def __repr__(self):
-        return self.value
+        return str.upper(self.value)
     
     def __eq__(self,other):
         return (self.value == other.value)
@@ -347,7 +476,10 @@ class IP(Constant):
     const_type = "IP" 
     format_string = "{n1:Num}.{n2:Num}.{n3:Num}.{n4:Num}/{mask:Num}" 
     def __init__(self,ip_str):
-        #print ip_str.strip().split()
+        def toN(text):
+            return int(text)
+
+       #print ip_str.strip().split()
         def parse_ip_string(ip_str):
             #print ip_str
             from parse import parse
@@ -392,6 +524,7 @@ class IP(Constant):
         return (self.address == other.address) and (self.mask == other.mask)
     def __neq__(self,other):
         return not(self.__eq__(other))
+
 def isBinary(ast_type):
     bops = ["and","or","implies","bimplies"]
     return ast_type in bops

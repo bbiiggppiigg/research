@@ -7,7 +7,7 @@
 type token =
   (* commands *)
   | Invariant | Precedence | Reaction | Justice
-  
+  | Gt | Geq | Lt | Leq  
   | Next | Not
   | Comma | Dot
   | Implies | Plus | Div | Minus | Mul | Match | Assign | And | Or | BImplies  | NMatch

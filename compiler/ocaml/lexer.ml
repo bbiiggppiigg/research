@@ -52,6 +52,10 @@ and lex_operator buffer = parser
     | [< stream=lex >] ->
         match Buffer.contents buffer with
         | "==" -> [< 'Token.Match; stream >]
+        | ">=" -> [< 'Token.Geq; stream >]
+        | ">" -> [< 'Token.Gt; stream >]
+        | "<=" -> [< 'Token.Leq; stream >]
+        | "<" -> [< 'Token.Lt; stream >]
         | "!=" -> [< 'Token.NMatch; stream >]
         | "=" -> [< 'Token.Assign; stream >]
         | "+" -> [< 'Token.Plus; stream >]
