@@ -1,1 +1,1 @@
-minterm/minterm.py
+minterm_lib/minterm.py

@@ -11,5 +11,4 @@ class MyApp(frenetic.App):
 
     #def packet_in(self,dpid,port_id,payload):
     #    pkt = Packet.from_payload(dpid,port_id,payload)
-        actions = []
 

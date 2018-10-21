@@ -1,44 +1,49 @@
 [INPUT]
-i1
-i4
-i7
-i10
-i13
-i15
-i2
-i5
-i8
-i11
-i14
-i16
+ip4Dst@0.0.4
+ip4Dst@1
+ip4Dst@2
+ip4Src@0.0.4
+ip4Src@1
+ip4Src@2
 
 [OUTPUT]
-o3
-o6
-o9
-o12
+Port@0.0.4
+Port@1
+Port@2
+block
 s1
 s2
-block
+
+[ENV_TRANS]
+
+## Variable limits: 0<=ip4Dst'<=4
+| ! ip4Dst@2' & ! ip4Dst@1' | ! ip4Dst@0.0.4' 0
+## Variable limits: 0<=ip4Src'<=4
+| ! ip4Src@2' & ! ip4Src@1' | ! ip4Src@0.0.4' 0
+
+[ENV_INIT]
+## Variable limits: 0<=ip4Dst<=4
+| ! ip4Dst@2 & ! ip4Dst@1 | ! ip4Dst@0.0.4 0
+## Variable limits: 0<=ip4Src<=4
+| ! ip4Src@2 & ! ip4Src@1 | ! ip4Src@0.0.4 0
 
 [SYS_TRANS]
-| ! & & | | & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & o3 ! o6 o9 o12 & & & o3 o6 o9 ! o12 & & & o3 o6 o9 o12
-| ! & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & ! o3 o6 ! o9 o12 & & & o3 o6 o9 ! o12 & & & o3 o6 o9 o12
-| ! & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & o3 ! o6 o9 o12 & & & o3 o6 o9 ! o12 & & & o3 o6 o9 o12
-| ! & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 i11 i14 i16 ! block | | & & & ! o3 o6 ! o9 o12 & & & o3 ! o6 o9 o12 & & & o3 o6 o9 o12
-| & ! | & & | | & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s1 ! 0 ! s1' & | & & | | & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 ! i7 i10 i13 ! i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 ! i5 i8 i11 i14 ! i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s1 ! 0 s1'
+| ! & & $ 1 & ! ip4Src@2 & ! ip4Src@1 & ! ip4Src@0.0.4 1 $ 1 & ! ip4Dst@2 & ! ip4Dst@1 & ! ip4Dst@0.0.4 1 ! block $ 1 & ! Port@2 & ! Port@1 & ! Port@0.0.4 1
+| ! & & $ 1 & ! ip4Src@2 & ! ip4Src@1 & ! ^ ip4Src@0.0.4 1 1 $ 1 & ! ip4Dst@2 & ! ip4Dst@1 & ! ^ ip4Dst@0.0.4 1 1 ! block $ 1 & ! Port@2 & ! Port@1 & ! ^ Port@0.0.4 1 1
+| ! & & $ 1 & ! ip4Src@2 & ! ^ ip4Src@1 1 & ! ^ ip4Src@0.0.4 0 1 $ 1 & ! ip4Dst@2 & ! ip4Dst@1 & ! ip4Dst@0.0.4 1 ! block $ 1 & ! Port@2 & ! Port@1 & ! Port@0.0.4 1
+| ! & & $ 1 & ! ip4Src@2 & ! ip4Src@1 & ! ^ ip4Src@0.0.4 1 1 $ 1 & ! ip4Dst@2 & ! ^ ip4Dst@1 1 & ! ^ ip4Dst@0.0.4 0 1 ! block $ 1 & ! Port@2 & ! ^ Port@1 1 & ! ^ Port@0.0.4 0 1
+| & ! | & & $ 1 & ! ip4Src@2 & ! ip4Src@1 & ! ip4Src@0.0.4 1 $ 1 & ! ip4Dst@2 & ! ^ ip4Dst@1 1 & ! ^ ip4Dst@0.0.4 0 1 ! block & s1 ! 0 ! s1' & | & & $ 1 & ! ip4Src@2 & ! ip4Src@1 & ! ip4Src@0.0.4 1 $ 1 & ! ip4Dst@2 & ! ^ ip4Dst@1 1 & ! ^ ip4Dst@0.0.4 0 1 ! block & s1 ! 0 s1'
 | ! s1 block
-| & ! | & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s2 ! 0 ! s2' & | & & | | & & & & & ! i1 i4 i7 i10 ! i13 i15 & & & & & i1 ! i4 i7 ! i10 i13 i15 & & & & & i1 i4 i7 i10 i13 i15 | | & & & & & ! i2 i5 ! i8 i11 i14 i16 & & & & & i2 i5 i8 ! i11 ! i14 i16 & & & & & i2 i5 i8 i11 i14 i16 ! block & s2 ! 0 s2'
+| & ! | & & $ 1 & ! ip4Src@2 & ! ^ ip4Src@1 1 & ! ^ ip4Src@0.0.4 0 1 $ 1 & ! ip4Dst@2 & ! ip4Dst@1 & ! ^ ip4Dst@0.0.4 1 1 ! block & s2 ! 0 ! s2' & | & & $ 1 & ! ip4Src@2 & ! ^ ip4Src@1 1 & ! ^ ip4Src@0.0.4 0 1 $ 1 & ! ip4Dst@2 & ! ip4Dst@1 & ! ^ ip4Dst@0.0.4 1 1 ! block & s2 ! 0 s2'
 | ! s2 block
+## Variable limits: 0<=Port'<=4
+| ! Port@2' & ! Port@1' | ! Port@0.0.4' 0
 
 [SYS_INIT]
-
-o3
-o6
-o9
-o12
 ! s1
 ! s2
+## Variable limits: 0<=Port<=4
+| ! Port@2 & ! Port@1 | ! Port@0.0.4 0
 
 [ENV_LIVENESS]
 

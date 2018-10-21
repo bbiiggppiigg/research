@@ -12,7 +12,14 @@ let rec parse_primary = parser
     | [<>] -> print_endline "end parsing primary"; new Ast.gg
 and parse_negation = parser
     | [<'Token.Lparen ; e = parse_expr ; 'Token.Rparen >] -> new Ast.unot e
-    | [<'Token.Ident str>] -> new Ast.bmatch (new Ast.var str) (new Ast.boolean "false")
+    | [<'Token.Ident str>] ->  
+        let lower = String.lowercase str in
+        match lower with 
+        | "true" -> new Ast.boolean "true"
+        | "false" -> new Ast.boolean "false"
+        | _ -> new Ast.unot (new Ast.bool_expr str)
+
+
 and print_endline = 
     (fun x -> () )
 and parse_pred str = parser
@@ -23,12 +30,12 @@ and parse_pred str = parser
     | [< 'Token.Lt; rhs=parse_primary >] -> new Ast.blt (new Ast.var str) rhs
     | [< 'Token.Leq; rhs=parse_primary >] -> new Ast.bleq (new Ast.var str) rhs
     | [< 'Token.Assign; rhs=parse_primary >] -> new Ast.bassign (new Ast.var str) rhs
-    | [<>] -> 
+    | [<>] -> (*new Ast.var str *)
         let lower = String.lowercase str in
         match lower with 
         | "true" -> new Ast.boolean "true"
         | "false" -> new Ast.boolean "false"
-        | _ -> new Ast.bmatch (new Ast.var str) (new Ast.boolean "true")
+        | _ -> new Ast.bool_expr str
 and parse_number n1 = parser 
     | [< 'Token.Dot ; 'Token.Number n2 ; 'Token.Dot ; 'Token.Number n3 ; 'Token.Dot; 'Token.Number n4;  ip=(parse_ip n1 n2 n3 n4) >] -> 
     ip

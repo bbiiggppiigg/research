@@ -1,1 +1,1 @@
-minterm/gen_frenetic.py
+minterm_lib/gen_frenetic.py

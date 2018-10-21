@@ -1,24 +1,26 @@
 [INPUT]
 ip4Dst:0...4
 ip4Src:0...4
-CONST_FALSE
-CONST_TRUE
 [OUTPUT]
 Port:0...4
 block
+s1
+s2
 [ENV_INIT]
 [SYS_INIT]
-(! s1)
-(! s2)
+!(s1)
+!(s2)
+[ENV_TRANS]
+
 [SYS_TRANS]
-( (( (( (ip4Src = 0) && (ip4Dst = 0) )) && ((block = FALSE)) )) -> (Port = 0) )
-( (( (( (ip4Src = 1) && (ip4Dst = 1) )) && ((block = FALSE)) )) -> (Port = 1) )
-( (( (( (ip4Src = 2) && (ip4Dst = 0) )) && ((block = FALSE)) )) -> (Port = 0) )
-( (( (( (ip4Src = 1) && (ip4Dst = 2) )) && ((block = FALSE)) )) -> (Port = 2) )
-(( (( (ip4Src = 0) && (ip4Dst = 2) )) && ((block = FALSE)) ) | ((s1) & !(CONST_FALSE = TRUE))) <-> X((s1))
-((s1))->((block = TRUE))
-(( (( (ip4Src = 2) && (ip4Dst = 1) )) && ((block = FALSE)) ) | ((s2) & !(CONST_FALSE = TRUE))) <-> X((s2))
-((s2))->((block = TRUE))
+( (( (( (ip4Src = 0) && (ip4Dst = 0) )) && (( !(block) )) )) -> (Port = 0) )
+( (( (( (ip4Src = 1) && (ip4Dst = 1) )) && (( !(block) )) )) -> (Port = 1) )
+( (( (( (ip4Src = 2) && (ip4Dst = 0) )) && (( !(block) )) )) -> (Port = 0) )
+( (( (( (ip4Src = 1) && (ip4Dst = 2) )) && (( !(block) )) )) -> (Port = 2) )
+(( (( (ip4Src = 0) && (ip4Dst = 2) )) && (( !(block) )) ) | (s1 & !(FALSE))) <-> X(s1)
+(s1)->(block)
+(( (( (ip4Src = 2) && (ip4Dst = 1) )) && (( !(block) )) ) | (s2 & !(FALSE))) <-> X(s2)
+(s2)->(block)
 [ENV_LIVENESS]
 
 [SYS_LIVENESS]

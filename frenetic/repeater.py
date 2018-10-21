@@ -18,6 +18,8 @@ class RepeaterApp(frenetic.App):
     def packet_in(self,dpid,port_id,payload):
         out_port_id = 2 if port_id == 1 else 1
         pkt = Packet.from_payload(dpid,port_id,payload) 
+        if (pkt.ip4Src == "10.0.0.1"):
+            print "from 1"
         print dpid,port_id,pkt
         
          

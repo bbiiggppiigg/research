@@ -90,6 +90,13 @@ class unext e1 = object
     inherit uop "next" e1
 end;;
 
+class bool_expr e1 = object
+    inherit expr
+    val e1:string = e1
+    
+    method __repr__ =  Printf.sprintf "( bool_expr (%s))" e1
+end;;
+
 
 class bop ast_type e1 e2= object
     inherit expr
