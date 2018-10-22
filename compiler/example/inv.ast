@@ -1,3 +1,0 @@
-Invariant ( Implies ( Match ( Value ( Bool IP4Src)) ( Value ( IP ( Masked 127.0.0.1/24)))) ( Match ( Value ( Bool Port)) ( Value ( Number 5))))
-Invariant ( Implies ( NMatch ( Value ( Bool IP4Src)) ( Value ( IP ( Masked 127.0.0.1/8)))) ( Match ( Value ( Bool Port)) ( Value ( Number 6))))
-Invariant ( Implies ( Not( Match ( Value ( Bool IP4Src)) ( Value ( IP ( Masked 128.0.0.1/8))))) ( Match ( Value ( Bool Port)) ( Value ( Number 6))))

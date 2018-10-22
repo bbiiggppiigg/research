@@ -84,6 +84,7 @@ and lex_ident buffer = parser (*lex identifier start with a-zA-z , followed by 0
       | "Invariant" -> [< 'Token.Invariant; stream >]
       | "Reaction" -> [< 'Token.Reaction; stream >]
       | "Precedence" -> [< 'Token.Precedence; stream >]
+      | "Justice" -> [< 'Token.Justice; stream >]
       | "X" -> [< 'Token.Next; stream >]
       | id -> [< 'Token.Ident id; stream >]
 

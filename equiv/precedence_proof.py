@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import spot
-precede= spot.formula(" ((F p) -> ( (!p) U ((!p) & e) ))")
-gr1 = spot.formula(" (!e & !s & !p) & G( (!s & !e)->X(!s) ) &G(e->X(s))  & G((!s)->(!p)) & G(s->X(s))")
+precede= spot.formula(" ((F after) -> ( (!after) U ((!after) & before) ))")
+gr1 = spot.formula(" (!before & !s & !after) & G( (!s & !before)->X(!s) ) &G(before->X(s))  & G((!s)->(!after)) & G(s->X(s))")
 
 def implies(f,g):
     a_f = f.translate()

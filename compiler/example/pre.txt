@@ -1,4 +1,0 @@
-Invariant(!pkt_in & !pkt_out)
-Invariant(pkt_in==127.0.0.1 & pkt_out==127.0.0.2 | pkt_something==pkt_out)
-Precedence(pkt_in,pkt_out)
-Reaction(infected,fwd,!infected)

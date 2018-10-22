@@ -1,2 +1,0 @@
-Invariant ( BImplies ( Equal ( Value ( Bool pkt_in)) ( Value ( IP ( Masked 127.0.0.1/24)))) ( Next( And ( Equal ( Value ( Bool pkt_out)) ( Value ( Number 2))) ( Equal ( Value ( Bool pkt_out)) ( Value ( Number 4))))))
-Invariant ( BImplies ( Equal ( Value ( Bool pkt_in)) ( Value ( IP ( Normal 127.0.0.1)))) ( Next( And ( Equal ( Value ( Bool pkt_out)) ( Value ( Number 2))) ( Equal ( Value ( Bool pkt_out)) ( Value ( Number 4))))))
