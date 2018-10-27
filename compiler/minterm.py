@@ -1,1 +1,0 @@
-minterm_lib/minterm.py

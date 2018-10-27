@@ -7,6 +7,9 @@ let main() =
     let filename = Array.get Sys.argv 1 in
     let infile = open_in filename in
     let stream = Stream.of_channel infile in
-    Toplevel.main_loop (Lexer.lex stream);
+    let ofilename = Array.get Sys.argv 2 in
+    let ofile = open_out ofilename in
+    Toplevel.main_loop (Lexer.lex stream) ofile;
+    print_endline "Success!";
 ;;
 main()

@@ -165,6 +165,6 @@ end
 let rec print_expr expr depth=
     print_string  expr#__repr__
 
-let print_macro macro = 
-    Printf.printf "%s\n" macro#__repr__
+let print_macro macro ofile= 
+    Printf.fprintf ofile "%s\n" macro#__repr__
 
