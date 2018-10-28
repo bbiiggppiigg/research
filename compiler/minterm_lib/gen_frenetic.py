@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys
 from gencode_lib.parser import parse_strategy
-from gencode_lib.variables import DSs
+from gencode_lib.tables import DSs
 from gencode_lib.printer import Printer, SolutionTable
 
 get_sign = lambda x : (1,x) if x > 0 else (-1,-x) if x < 0 else (0,0)

@@ -1,4 +1,5 @@
-from gencode_lib.variables import DSs, Helper
+from gencode_lib.tables import DSs
+from gencode_lib.helper import Helper, ImpossibleCondition
 
 class SolutionTable(object):
     table = dict()
@@ -6,10 +7,9 @@ class SolutionTable(object):
     @classmethod
     def insert(cls,stack):
         
-        primed,unprimed = Helper.split_vars(stack)
+        primed,unprimed,counter,flags = Helper.split_vars(stack)
         unprimed_in ,unprimed_out = Helper.split_io(unprimed)
         primed_in ,primed_out = Helper.split_io(primed)
- 
         if (primed_out == frozenset()):
             return 
         table = cls.table
@@ -22,7 +22,7 @@ class SolutionTable(object):
         if( setupout  not in table[setupin]):
             table[setupin][setupout] = dict()
         if( setpin  not in table[setupin][setupout]):
-            table[setupin][setupout][setpin] = setpout #list()
+            table[setupin][setupout][setpin] = (setpout,counter,flags) #list()
         #if (setpout not in table[setupin][setupout][setpin]):
         #    table[setupin][setupout][setpin].append(setpout)
     
@@ -32,31 +32,47 @@ class SolutionTable(object):
         print "dumping solution"
         isfirst = True
         ret = ""
+        
+        num_tabs = 2
         for upin in cls.table:
-                
-            num_tabs = 2
-            
-            upin_str  =  Helper.interpret_stack(upin)
-            
+            try: 
+                upin_str  =  Helper.interpret_stack(upin)
+                print len(upin),upin_str
+            except ImpossibleCondition, e:
+                print e
+                continue
             for upout in cls.table[upin]:
-                
-                upout_str = Helper.interpret_stack(upout)
-                
+                try: 
+                    upout_str = Helper.interpret_stack(upout)
+                    print len(upout),upout_str,upout
+                except ImpossibleCondition, e:
+                    print e
+                    continue
+
                 for pin in cls.table[upin][upout]:
-                    pin_str =  Helper.interpret_stack(pin,True)
-                    if(len(upin_str + upout_str + pin_str)==0):
+                    try:
+                        pin_str =  Helper.interpret_stack(pin,True)
+                    except ImpossibleCondition, e:
+                        print e
                         continue
-                    predicates = upin_str + upout_str + pin_str
+                     
+                    pout,counters,flags = cls.table[upin][upout][pin]
+                    counter_str = Helper.get_possible_counter(counters) 
+                    
+                    if(len(upin_str + upout_str + pin_str+counter_str)==0):
+                        continue
+                    predicates = upin_str + upout_str + pin_str + counter_str
                     if(isfirst):
                         cond_str = "\t"*num_tabs+"if(%s):\n" % (" and ".join(predicates))
                     else:
                         cond_str = "\t"*num_tabs+"elif(%s):\n" % (" and ".join(predicates))
+                     
                     
-                    #isfirst = False
                     
-                    pout = cls.table[upin][upout][pin]
                     actions = Helper.interpret_actions(pout)
                     action_str = "".join (map ( lambda action: "\t" *(num_tabs+1) + action+"\n"  , actions))
+                    if( Helper.goal_reached(flags)):
+                        action_str += "\t"*(num_tabs+1)+"self.nib.counter = (self.nib.counter + 1 ) %% %d\n"%DSs.state_counter_max
                     if(action_str == "" or cond_str ==""):
                         continue
                     ret += (cond_str + action_str)
@@ -115,7 +131,8 @@ def get_init_str(state_vars, bool_vars , miterm_vars):
     for var in state_vars  + bool_vars :
         ret += "\t"*numtabs + "self."+var+" = False\n"
     for var in miterm_vars:
-        ret += "\t"*numtabs + "self."+var.name+" = -1\n"
+        ret += "\t"*numtabs + "self."+var.name+" = 0\n"
+    ret += "\t" * numtabs + "self.counter = 0\n"
     return skeleton%ret 
 
 def get_import_str():

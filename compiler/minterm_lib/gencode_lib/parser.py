@@ -1,4 +1,4 @@
-from variables import VarTable
+from variables import MintermEncodingTable
 def parse_variables(variables):
     ret = []
     for variable in variables:
@@ -15,13 +15,13 @@ def parse_variables(variables):
         if ("@0" in variable):
             var_name,values = tmp.split("@")
             zero,min_value,max_value=values.split(".")
-            VarTable.insert_or_create( var_name ,(min_value,max_value))     
+            MintermEncodingTable.insert_or_create( var_name ,(min_value,max_value))     
             tmp = var_name+"@0" 
         elif("@" not in variable):
-            VarTable.insert_or_create(tmp)
+            MintermEncodingTable.insert_or_create(tmp)
         else: # @ in variable but not @0
             var_name,values = tmp.split("@")
-            VarTable.record_bits(var_name,values)
+            MintermEncodingTable.record_bits(var_name,values)
 
         if("'" in variable):
             tmp = tmp+"'"

@@ -111,11 +111,12 @@ def setup_vartable(declare_in):
     #Z3VarTable.insert("CONST_TRUE","bool",True)
     #Z3VarTable.insert("CONST_FALSE","bool",True)
 
+    Z3VarTable.insert('Port',"int",is_input = False , init_value = 1, min_max = (1,65536) )
     parse_declaration(declare_in)
     
     variables = Z3VarTable.vartable
-    for name in (variables):
-        var = variables[name]
+    #for name in (variables):
+    #    var = variables[name]
 
 
 
@@ -146,6 +147,7 @@ def generate_slugs(declare_in, ast_in , slug_out , table_out):
         dill.dump(var_table,f)
         dill.dump(MintermTable,f)
         dill.dump(StateVarTable.table,f)
+        dill.dump(lives,f)
     
         
     print "END OF MINTEMRM"

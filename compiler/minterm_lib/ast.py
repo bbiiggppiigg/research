@@ -70,10 +70,10 @@ class Z3VarTable:
         except :
             raise Exception ("unknown variable %s"%var)
     @classmethod
-    def insert(cls,name,typeinfo,is_input = False, init_value = None ):
+    def insert(cls,name,typeinfo,is_input = False, init_value = None , min_max = None):
         if ( name in cls.vartable):
             return cls.vartable[name]
-        var = Var(name,typeinfo,is_input , init_value)
+        var = Var(name,typeinfo,is_input , init_value, min_max)
         cls.vartable[name]=var
         
         if(typeinfo == "bool"):
@@ -173,12 +173,13 @@ class BoolExpr(BExpr):
 
 
 class Var(object):
-    def __init__(self,name,ast_type,is_input=False, init_value = None):
+    def __init__(self,name,ast_type,is_input=False, init_value = None, min_max = None ):
         self.name = name
         self.ast_type = ast_type
         self.is_input = is_input
         self.init_value  = init_value
-    
+        self.min_max = min_max
+          
     def __repr__(self):
         return self.name
     

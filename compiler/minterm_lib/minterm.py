@@ -17,8 +17,13 @@ from ast import   Z3VarTable,PredicateTable, StateVarTable
 
         
 
-def getInitSolver():
+def getInitSolver(var):
     s = Solver()
+    if ( var.min_max is not None):
+        min_value, max_value = var.min_max
+        z3var = Z3VarTable.get(var)
+        s.add(min_value <= z3var )
+        s.add( z3var <= max_value)
     return s
 
 
@@ -85,10 +90,10 @@ class Minterm(object):
             return "self.nib.%s == %d"%(self.var.name,self.id)
 
     def fr_action_update(self):
-        return "self.nib.%s%d = True" % (self.var.name,self.id)
+        return "self.nib.%s = %d" % (self.var.name,self.id)
     
     def fr_update(self):
-        return "self.nib.%s = %d" % (self.var.name,self.id)
+        return "self.nib.%s = %s" % (self.var.name,self.z3value)
     
     def fr_action(self):
         name = self.var.name
@@ -309,7 +314,7 @@ def generate_minterms():
         if(len(preds)==0):
             continue
         print "generating minterm for variable ",var
-        s = getInitSolver()
+        s = getInitSolver(var)
         gen_minterm(s,var,[],0,len(preds))
 
 
