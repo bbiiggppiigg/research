@@ -110,7 +110,7 @@ class Helper:
         ret = []
         bitmaps = cls.collect_bitmap(indices)
         for var_name, bitmap in bitmaps.iteritems():
-            ret.append(Helper.get_possible_minterms(var_name,bitmap))
+            ret.append(cls.get_possible_minterms(var_name,bitmap))
         return ret
 
     @classmethod
@@ -120,7 +120,7 @@ class Helper:
         
         for var_name ,bitmap in bitmaps.iteritems():
             try:
-                ret.append(Helper.get_possible_minterms(var_name,bitmap)[:1])
+                ret.append(cls.get_possible_minterms(var_name,bitmap)[:1])
             except ImpossibleCondition, e:
                 continue
         return ret
@@ -152,7 +152,7 @@ class Helper:
         bitmaps = cls.collect_bitmap(indices)
         print bitmaps 
         for var_name,bitmap in bitmaps.iteritems():
-            ret.append(Helper.get_minterm_string(var_name,bitmap,isprime))
+            ret.append(cls.get_minterm_string(var_name,bitmap,isprime))
         ret = filter(lambda x : x!="", ret)
         return ret
         
