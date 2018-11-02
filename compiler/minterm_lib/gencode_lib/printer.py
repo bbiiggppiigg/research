@@ -1,7 +1,97 @@
 from gencode_lib.tables import DSs
 from gencode_lib.helper import Helper, ImpossibleCondition
 
+
 class SolutionTable(object):
+    table = dict()
+    terminate = 20
+    @classmethod
+    def insert(cls,stack):
+        if(cls.terminate==0):
+            return
+        primed,unprimed,counter,flags = Helper.split_vars(stack)
+        unprimed_in ,unprimed_out = Helper.split_io(unprimed)
+        primed_in ,primed_out = Helper.split_io(primed)
+        
+        if (primed_out == frozenset()):
+            return 
+        table = cls.table
+        
+        setupin = (unprimed_in)
+        setupout = (unprimed_out)
+        setpin =  (primed_in)
+        setpout =  (primed_out)
+        try: 
+            upin_str  =  Helper.interpret_stack(setupin)
+            upout_str = Helper.interpret_stack(setupout)
+            pin_str =  Helper.interpret_stack(setpin,True)
+            counter_str = Helper.get_possible_counter(counter) 
+        except ImpossibleCondition, e:
+            #print "impossible condition",e
+            return
+            
+        #cond_str_list = upin_str + upout_str + pin_str + counter_str
+        cond_str_list = pin_str + counter_str
+        if (len(cond_str_list)==0):
+            return
+
+        cond_str_set = set(cond_str_list)
+        
+        
+        
+        num_tabs = 2 
+        actions = Helper.interpret_actions(setpout)
+        action_str = "".join (map ( lambda action: "\t" *(num_tabs+1) + action+"\n"  , actions))
+        if( Helper.goal_reached(flags)):
+            action_str += "\t"*(num_tabs+1)+"self.nib.counter = (self.nib.counter + 1 ) %% %d\n"%DSs.state_counter_max
+        if(action_str == ""):
+            return
+        superset = None
+        for preds in table:
+            if preds.issubset(cond_str_set):
+                if cond_str_set.issubset(preds): # Same
+                    if (action_str > table[preds]): # Replace if we have  more action associated with 
+                        superset = preds
+                        break
+                    else:
+                        pass
+                else: # If we find a proper subset of the this condition set, we know its if branch is covered
+                    return 
+            elif cond_str_set.issubset(preds): # If our new condition is a subset of preds
+                superset = preds
+                break
+        
+       
+        if (superset is not None):
+            del table[superset]
+ 
+        table[frozenset(cond_str_set)] = action_str 
+        Helper.translate(list(setupin)+list(setupout)+list(setpin)+list(setpout))
+   
+        cls.terminate = cls.terminate - 1
+
+    @classmethod
+    def dump_native_solution(cls):
+        print "dumping solution"
+        isfirst = True
+        ret = ""
+        num_tabs = 2
+        i= 0
+        for predicates,action_str in cls.table.iteritems():
+            #predicates = filter(lambda x : x != "", predicates)
+            if(isfirst):
+                cond_str = "\t"*num_tabs+"if(%s):\n" % (" and ".join(predicates))
+            else:
+                cond_str = "\t"*num_tabs+"elif(%s):\n" % (" and ".join(predicates))
+            ret += (cond_str + action_str)
+            isfirst = False         
+            #i = i + 1
+            #if ( i > cls.terminate):
+            #    break
+        return ret
+
+
+class SolutionTable2(object):
     table = dict()
 
     @classmethod
@@ -26,7 +116,7 @@ class SolutionTable(object):
         #if (setpout not in table[setupin][setupout][setpin]):
         #    table[setupin][setupout][setpin].append(setpout)
     
-
+"""
     @classmethod
     def dump_native_solution(cls):
         print "dumping solution"
@@ -37,14 +127,14 @@ class SolutionTable(object):
         for upin in cls.table:
             try: 
                 upin_str  =  Helper.interpret_stack(upin)
-                print len(upin),upin_str
+                #print len(upin),upin_str
             except ImpossibleCondition, e:
                 print e
                 continue
             for upout in cls.table[upin]:
                 try: 
                     upout_str = Helper.interpret_stack(upout)
-                    print len(upout),upout_str,upout
+                    #print len(upout),upout_str,upout
                 except ImpossibleCondition, e:
                     print e
                     continue
@@ -81,7 +171,7 @@ class SolutionTable(object):
 
         return ret
         pass
-
+"""
 
 class Printer(object):
     @classmethod

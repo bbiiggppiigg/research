@@ -13,7 +13,7 @@ def dfs(root, goal,stack):
     #print sign,value, goal
     if(value == 1):
         if(sign == goal):
-            print stack,len(stack)
+            #print stack,len(stack)
             SolutionTable.insert(stack)
         else:
             pass

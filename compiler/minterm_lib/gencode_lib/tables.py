@@ -21,8 +21,8 @@ class DSs(object):
             cls.minterm_table.dump()
             cls.statevar_table = dill.load(f)
             cls.state_counter_max = dill.load(f)
-            for name in cls.var_table:
-                print name , cls.var_table[name].ast_type , cls.var_table[name].init_value
+            #for name in cls.var_table:
+            #    print name , cls.var_table[name].ast_type , cls.var_table[name].init_value
             #print cls.var_table.items()
             #print cls.statevar_table
             #exit(-1)

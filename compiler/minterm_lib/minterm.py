@@ -1,8 +1,8 @@
 #!/usr/bin/python
-from z3 import Solver, sat
+from z3 import Solver, sat , And, Not
 from parser import parse_macros
 from ast import   Z3VarTable,PredicateTable, StateVarTable
-
+from flag import DEBUG
 
 """
 1. _%d Token Generator for Reactive Pattern 
@@ -15,11 +15,13 @@ from ast import   Z3VarTable,PredicateTable, StateVarTable
 # A global variable for storing default input variable names to z3 variables mapping
 
 
-        
+#DEBUG = False        
+#DEBUG = True 
 
 def getInitSolver(var):
     s = Solver()
     if ( var.min_max is not None):
+        print "adding min_max for ",var
         min_value, max_value = var.min_max
         z3var = Z3VarTable.get(var)
         s.add(min_value <= z3var )
@@ -33,6 +35,8 @@ Return a list of predicates appear in the AST
 """
 class ActionTable(object):
     pass
+
+
 import ipaddress
 class Minterm(object):
     builtin_action = dict()
@@ -76,6 +80,12 @@ class Minterm(object):
         return "%s = %d"%(self.var,self.id)
     
     def fr_predicate(self,isprime = False):
+        # TODO DEBUG
+        if(DEBUG):
+            if (isprime):
+                return "%s%d"%(self.var.name,self.id)
+            return "self.nib.%s%d"%(self.var.name,self.id)
+            
         if ( isprime) :
             if( self.var.name in self.builtin_predicate):
                 ret =  " and ".join(map (lambda x : x.fr_predicate() , self.pred_list))
@@ -99,7 +109,10 @@ class Minterm(object):
         name = self.var.name
         value = self.z3value
         if(name in self.builtin_action):
+            
             action =  self.builtin_action[name]%(value)
+            if(DEBUG):
+                action =  self.builtin_action[name]%(self.id) #TODO DEBUG
             return "actions += [%s]"%action
         return "self.nib.%s = %s " % ( name ,value)
 
@@ -152,9 +165,9 @@ class MintermTable(object):
         outputs = []
         for var in cls.table:
             if (var.is_input):
-                inputs.append((var,len(cls.table[var])))
+                inputs.append((var,len(cls.table[var])-1))
             else:
-                outputs.append((var,len(cls.table[var])))
+                outputs.append((var,len(cls.table[var])-1))
         return inputs,outputs
     
     @classmethod
@@ -167,6 +180,80 @@ class MintermTable(object):
     pass
 
 
+def check_implies(a,b):
+    s = Solver()
+    s.add(And(a,Not(b)))
+    if(s.check() == sat):
+        return False
+    return True
+
+"""
+    Per_Var_Minterm is a dictionary that collects lists of encodings for each vars
+    per_var_minterm = { ip4Src : [[0,1], [1,1] ]  ip4Dst = : [ [..], ... ] } 
+"""
+
+
+def gen_minterm2(solver, sofar ,var, predicates, depth , limit):
+    
+    if (solver.check() != sat):
+        #print predicates
+        return
+    if (depth == limit):
+        #print solver.model()
+        #minterm = Minterm(predicates) 
+        minterm = MintermTable.insert(var,predicates,solver.model()[Z3VarTable.get(var)])
+        for predicate in predicates:
+            PredicateMintermMap.insert_mapping(predicate,minterm)
+
+        return 
+
+    
+    pred = PredicateTable.table[var][depth]
+    predz3 = pred.toZ3()
+    negpred = pred.negate()
+    negpredz3 = negpred.toZ3()
+    """
+        Case by Case analysis
+        a). pred not duplicate: Label 1 and Label 3 get executuede
+        b). pred in predicates -> not pred not in predicates =>
+            Label 2 and Label 3 get executed
+        c). not pred in predicates -> pred not in predicates => # Label 1 and 4 get executed
+
+    """
+    if( pred not in predicates): # Label 1
+        if ( check_implies(sofar,predz3)):
+            #print sofar, predz3
+            gen_minterm2(solver,sofar,var, predicates , depth+1 , limit)
+        elif (check_implies(predz3,sofar)):
+            print "swapping for ",var,predz3,sofar
+            newsolver = getInitSolver(var)
+            newsolver.add(predz3)
+            gen_minterm2(newsolver,predz3,var, [pred] , depth+1 , limit)
+        else:
+            solver.push()
+            solver.add(predz3)
+            gen_minterm2(solver,And(sofar, predz3) ,var, predicates + [pred] , depth+1 , limit)
+            solver.pop()
+    else: # Label 2
+        gen_minterm2(solver,sofar,var, predicates , depth+1 , limit)
+    
+    if (negpred not in predicates):  # Label 3
+        if ( check_implies(sofar,negpredz3)):
+            #print sofar, predz3
+            gen_minterm2(solver,sofar,var, predicates , depth+1 , limit)
+        elif (check_implies(negpredz3,sofar)):
+            print "swapping for ",var,predz3,sofar
+            newsolver = getInitSolver(var)
+            newsolver.add(negpredz3)
+            gen_minterm2(newsolver,negpredz3,var, [negpred] , depth+1 , limit)
+        else:
+            solver.push()
+            solver.add( negpredz3)
+            gen_minterm2(solver,And(sofar,negpredz3) ,var, predicates + [negpred] , depth+1 , limit)
+            solver.pop()
+    else: #Label 4
+        gen_minterm2(solver,sofar,var, predicates , depth+1 , limit)
+ 
 
 """
     Per_Var_Minterm is a dictionary that collects lists of encodings for each vars
@@ -315,7 +402,7 @@ def generate_minterms():
             continue
         print "generating minterm for variable ",var
         s = getInitSolver(var)
-        gen_minterm(s,var,[],0,len(preds))
+        gen_minterm2(s,And(True),var,[],0,len(preds))
 
 
 

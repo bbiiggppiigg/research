@@ -22,10 +22,8 @@
 #	5: Port@0.0.3'
 #	6: Port@1
 #	7: Port@1'
-#	8: qq
-#	9: qq'
-#	10: _jx_b0
-#	11: strat_type
+#	8: _jx_b0
+#	9: strat_type
 #
 # For information about the DDDMP format, please see:
 #    http://www.cs.uleth.ca/~rice/cudd_docs/dddmp/dddmpAllFile.html#dddmpDump.c
@@ -36,18 +34,18 @@
 .mode A
 .varinfo 0
 .nnodes 28
-.nvars 12
+.nvars 10
 .nsuppvars 9
 .suppvarnames ip4Src@0.0.3 ip4Src@0.0.3' ip4Src@1 ip4Src@1' Port@0.0.3 Port@0.0.3' Port@1 Port@1' _jx_b0
-.orderedvarnames ip4Src@0.0.3 ip4Src@0.0.3' ip4Src@1 ip4Src@1' Port@0.0.3 Port@0.0.3' Port@1 Port@1' qq qq' _jx_b0 strat_type
-.ids 0 1 2 3 4 5 6 7 10
-.permids 0 1 2 3 4 5 6 7 10
-.auxids 0 1 2 3 4 5 6 7 10
+.orderedvarnames ip4Src@0.0.3 ip4Src@0.0.3' ip4Src@1 ip4Src@1' Port@0.0.3 Port@0.0.3' Port@1 Port@1' _jx_b0 strat_type
+.ids 0 1 2 3 4 5 6 7 8
+.permids 0 1 2 3 4 5 6 7 8
+.auxids 0 1 2 3 4 5 6 7 8
 .nroots 1
 .rootids -28
 .nodes
 1 T 1 0 0
-2 10 8 1 -1
+2 8 8 1 -1
 3 7 7 1 2
 4 5 5 3 1
 5 3 3 2 4

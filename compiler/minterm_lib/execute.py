@@ -13,7 +13,16 @@ def parse_spec(path):
     print "Something Wrong parsing the spec",out
     exit(-1)
     return False
-    
+ 
+
+def translate_slugs(path):
+    cmd = "/home/frenetic/slugs/tools/StructuredSlugsParser/compiler.py  %s.structured_slugs" % (path)
+    print cmd
+    out = check_output(shlex.split(cmd),stderr=STDOUT)
+    with open("%s.slugs" % path, "w") as f:
+        f.write(out)
+
+   
 def execute_slugs(path):
     cmd = "/home/frenetic/slugs/src/slugs --symbolicStrategy %s.slugs %s.symbolic" % (path,path)
     print cmd
@@ -46,11 +55,16 @@ def gen_final(path):
 
 
 def main():
-    example="liveness"
+    example="reaction"
+    #example="liveness"
+    #example="block"
+    #example="simplest"
     #example="block"
     path="example/%s/%s"%(example,example)
     parse_spec(path)
+    
     execute_minterm(path)
+    translate_slugs(path)
     execute_slugs(path)
     gen_final(path)
 

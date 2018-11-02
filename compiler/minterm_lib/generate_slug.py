@@ -26,7 +26,28 @@ def collect_gr1(macros):
         trans += tran
         lives += live
     ret = "[ENV_INIT]\n"
+    for var in Z3VarTable.z3table:
+        if var.is_input:
+            if var.init_value is not None:
+                if var.ast_type == "bool":
+                    if var.init_value == "TRUE":
+                        ret += "%s\n" % (var.name)
+                    else:
+                        ret += "!%s\n" % (var.name)
+                else:
+                    ret += "%s=%s" % (var.name,var.init_value)
     ret +="[SYS_INIT]\n"
+    for var in Z3VarTable.z3table:
+        if not var.is_input:
+            if var.init_value is not None:
+                if var.ast_type == "bool":
+                    if var.init_value == "TRUE":
+                        ret += "%s\n" % (var.name)
+                    else:
+                        ret += "!%s\n" % (var.name)
+                else:
+                    ret += "%s=%s" % (var.name,var.init_value)
+ 
     ret += "\n".join(inits)
     ret += "\n[ENV_TRANS]\n"
     #ret += "CONST_TRUE\n"
@@ -111,7 +132,7 @@ def setup_vartable(declare_in):
     #Z3VarTable.insert("CONST_TRUE","bool",True)
     #Z3VarTable.insert("CONST_FALSE","bool",True)
 
-    Z3VarTable.insert('Port',"int",is_input = False , init_value = 1, min_max = (1,65536) )
+    Z3VarTable.insert('Port',"int",is_input = False , min_max = (1,65536) )
     parse_declaration(declare_in)
     
     variables = Z3VarTable.vartable

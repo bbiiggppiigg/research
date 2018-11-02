@@ -5,6 +5,12 @@ class ImpossibleCondition(Exception):
 
 class Helper:
     @classmethod
+    def translate(cls,indices):
+        ints,others = cls.split_int(indices)
+        #print map (lambda x : ( "~" if get_sign(x)[0] < 0 else "")+DSs.names[x] , others)
+        print cls.collect_bitmap(ints)
+
+    @classmethod
     def backtracking(cls,index,value,bit_map,limit):
         if(index == limit):
             return [value]
@@ -29,29 +35,33 @@ class Helper:
             bit_map[bit_index] = sign
         ret = cls.backtracking(0,0,bit_map,DSs.state_counter_limit+1)
         ret = filter ( lambda x : x < DSs.state_counter_max, ret) 
+        if ret == []:
+            return []
         ret  = map (lambda x : "(self.nib.counter == %d)" % x, ret)
         ret = " or ".join(ret)
-        print ret
+        #print ret
         return [ret]
         pass
+    
     @classmethod
-    def get_possible_minterms(cls,var_name,bit_map):
+    def get_possible_minterms(cls,var_name,bit_map,oname = None):
         int_var = MintermEncodingTable.get(var_name)
         max_value = int_var.max_value
-        min_value = int_var.min_value
         num_bits = int_var.num_bits
-        ret = cls.backtracking(0,0,bit_map,num_bits)
-        
+        encodings = cls.backtracking(0,0,bit_map,num_bits) # A list of possible encodings for miterm 
         var = DSs.var_table[var_name]
         #print var_name,ret,max_value
-        ret = filter(lambda x : x <= max_value , ret)
+        encodings = filter(lambda x : x <= max_value , encodings)
         #ret = filter(lambda x :  min_value <= x, ret)
         
-        if (len(ret) ==0 ):
+        if (len(encodings) ==0 ):
             raise ImpossibleCondition(var_name)
+        
+        print "possible encodings = ",var_name,encodings
         #print var,ret ,max_value
-        ret = map (lambda x : DSs.minterm_table.table[var][x] , ret) 
-        return ret 
+        minterms = map (lambda x : DSs.minterm_table.table[var][x] , encodings) 
+        #print "possible frenetic value " , var_name, map(lambda x : x.z3value, minterms)
+        return minterms
     """
         Return All Possible Minterm Values for a given Input
     """
@@ -68,6 +78,8 @@ class Helper:
         return ret
     @classmethod
     def goal_reached(cls,flags):
+        if( DSs.state_counter_max==0 ):
+            return False
         if (len(flags)!=1):
             return True
         return get_sign(flags[0])[0] > 0
@@ -112,25 +124,31 @@ class Helper:
         for var_name, bitmap in bitmaps.iteritems():
             ret.append(cls.get_possible_minterms(var_name,bitmap))
         return ret
-
+    """
+        For each variable, we need only one action assoicated with it
+    """
     @classmethod
     def get_single_minterms(cls,indices):
         ret = []
         bitmaps = cls.collect_bitmap(indices)
-        
+        print bitmaps
+        i = 0
         for var_name ,bitmap in bitmaps.iteritems():
+            print  i
+            i = i +1
             try:
                 ret.append(cls.get_possible_minterms(var_name,bitmap)[:1])
             except ImpossibleCondition, e:
                 continue
         return ret
-
+    """
+        For actions, we only need a single minterm representation
+    """
     @classmethod
     def interpret_actions(cls,indices):
         ret = []
         intvars ,bitvars= cls.split_int(indices)
         minterms = cls.get_single_minterms(intvars) 
-        
         for minterm in minterms:
             ret +=  map (lambda x : x.fr_action() , minterm )
         for minterm in minterms:
@@ -145,12 +163,14 @@ class Helper:
                 ret.append( "self.nib.%s = False "%var_name[:-1])
 
         return ret
-    
+    """
+        For each integer encodings, return the minterm strings
+    """
     @classmethod
     def interpret_ints(cls,indices,isprime= False):
         ret = []
         bitmaps = cls.collect_bitmap(indices)
-        print bitmaps 
+        print "int ",bitmaps  , indices
         for var_name,bitmap in bitmaps.iteritems():
             ret.append(cls.get_minterm_string(var_name,bitmap,isprime))
         ret = filter(lambda x : x!="", ret)
@@ -159,7 +179,7 @@ class Helper:
     @classmethod
     def interpret_stack(cls,indices,isprime = False):
         ret = []
-        print map (lambda x : ( "~" if get_sign(x)[0] < 0 else "")+DSs.names[x] , indices)
+        #print map (lambda x : ( "~" if get_sign(x)[0] < 0 else "")+DSs.names[x] , indices)
         ints,others = cls.split_int(indices) 
         #print len(ints),len(others),len(indices)
         ret_ints = cls.interpret_ints(ints,isprime)
@@ -194,7 +214,7 @@ class Helper:
                         ret += "\t"* num_tabs + "if (%s):\n" % (minterm.fr_predicate(True))
                     else:
                         ret += "\t"* num_tabs + "elif (%s):\n" % (minterm.fr_predicate(True))
-                    ret += "\t"* (num_tabs+1) + "%s\n" % (minterm.fr_update())
+                    ret += "\t"* (num_tabs+1) + "%s\n" % (minterm.fr_action_update())
                     first_if = False
         return ret
                     

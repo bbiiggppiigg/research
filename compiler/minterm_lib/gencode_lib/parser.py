@@ -7,11 +7,6 @@ def parse_variables(variables):
         if ("'" in variable):
             tmp = tmp[:-1] 
        
-       # if ("_jx_b" in tmp):
-            #tmp = "_jx_b@"+tmp[5:]
-            #print tmp
-            #exit(-1)
-        #    continue
         if ("@0" in variable):
             var_name,values = tmp.split("@")
             zero,min_value,max_value=values.split(".")

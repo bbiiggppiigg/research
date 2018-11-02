@@ -1,0 +1,4 @@
+Invariant( ( (ip4Src==10.0.0.1) & (ip4Dst == 10.0.0.2) ) -> Port=2)
+Invariant( ( (ip4Src==10.0.0.2) & (ip4Dst == 10.0.0.1) ) -> Port=1)
+Invariant( ( (ip4Src==10.0.0.3) & (ip4Dst == 10.0.0.2) ) -> Port=2)
+Invariant( ( (ip4Src==10.0.0.2) & (ip4Dst == 10.0.0.3) ) -> Port=3)

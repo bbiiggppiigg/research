@@ -1,4 +1,6 @@
 from z3 import And , Int , Bool, Or
+from flag import DEBUG
+
 def disjuncts (a,b):
     return Bop.create(a,b)
 
@@ -232,6 +234,7 @@ class Predicate(BExpr):
     def gr1_repr(self):
         from minterm import PredicateMintermMap
         ret = reduce(disjuncts,PredicateMintermMap.table[self])
+        print "gr1_repr",ret , ret.gr1_repr(), ret.id
         return ret.gr1_repr()
 
    
@@ -250,10 +253,15 @@ class Predicate(BExpr):
         #return compl_dict[self.ast_type](self.var,self.value,self.id)   
 
     def fr_predicate(self):
-        
+         
         var = self.var
         if(var.name in self.builtin_predicate):
             return self.builtin_predicate[var.name]%(self.symbol,self.value)
+        else:
+            print "g",var
+
+            exit(-1)
+
     
     @classmethod
     def create(cls,ast_type,var,value,pid = None):

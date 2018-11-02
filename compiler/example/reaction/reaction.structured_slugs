@@ -1,0 +1,20 @@
+[INPUT]
+ip4Dst:0...3
+ip4Src:0...3
+[OUTPUT]
+Port:0...3
+block
+[ENV_INIT]
+[SYS_INIT]
+!block
+
+[ENV_TRANS]
+
+[SYS_TRANS]
+( (( (ip4Src = 0) && (ip4Dst = 0) )) -> (Port = 0) )
+( (( (ip4Src = 1) && (ip4Dst = 1) )) -> (Port = 1) )
+( (( (ip4Src = 2) && (ip4Dst = 0) )) -> (Port = 0) )
+( (( (ip4Src = 1) && (ip4Dst = 2) )) -> (Port = 2) )
+[ENV_LIVENESS]
+
+[SYS_LIVENESS]
