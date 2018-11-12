@@ -47,7 +47,7 @@ class SolutionTable(object):
             action_str += "\t"*(num_tabs+1)+"self.nib.counter = (self.nib.counter + 1 ) %% %d\n"%DSs.state_counter_max
         if(action_str == ""):
             return
-        action_str += "\t"*(num_tabs+1) + "print \"case\",%d\n"%cls.case
+        #action_str += "\t"*(num_tabs+1) + "print \"case\",%d\n"%cls.case
         cls.case+=1
         superset = None
         for preds in table:
@@ -71,6 +71,34 @@ class SolutionTable(object):
         Helper.translate(list(setupin)+list(setupout)+list(setpin)+list(setpout))
    
         cls.terminate = cls.terminate - 1
+    @classmethod
+    def naive_simplify(cls):
+        table1 = dict()
+        for predicates,action_str in cls.table.iteritems():
+            if action_str not in table1:
+                table1[action_str] = list()
+            table1[action_str].append(predicates)
+        cls.reverse_table = table1
+        pass
+    
+    @classmethod
+    def generate_solution(cls):
+        print "dumping solution"
+        isfirst = True
+        ret = ""
+        num_tabs = 2
+        i= 0
+        for action_str,predicate_list in cls.reverse_table.iteritems():
+            predicate_strs = map(lambda predicates : "("+" and ".join(predicates)+")" ,predicate_list)
+            join_predicate_str = "\n\t\t\tor ".join(predicate_strs)
+            if(isfirst):
+                cond_str = "\t"*num_tabs+"if(%s):\n" % join_predicate_str
+            else:
+                cond_str = "\t"*num_tabs+"elif(%s):\n" % join_predicate_str
+            ret += (cond_str + action_str)
+            isfirst = False         
+        return ret
+
 
     @classmethod
     def dump_native_solution(cls):
@@ -80,16 +108,12 @@ class SolutionTable(object):
         num_tabs = 2
         i= 0
         for predicates,action_str in cls.table.iteritems():
-            #predicates = filter(lambda x : x != "", predicates)
             if(isfirst):
                 cond_str = "\t"*num_tabs+"if(%s):\n" % (" and ".join(predicates))
             else:
                 cond_str = "\t"*num_tabs+"elif(%s):\n" % (" and ".join(predicates))
             ret += (cond_str + action_str)
             isfirst = False         
-            #i = i + 1
-            #if ( i > cls.terminate):
-            #    break
         return ret
 
 
@@ -98,7 +122,9 @@ class SolutionTable(object):
 class Printer(object):
     @classmethod
     def setup(cls):
-        cls.code = SolutionTable.dump_native_solution()
+        SolutionTable.naive_simplify()
+        cls.code = SolutionTable.generate_solution()
+        #cls.code = SolutionTable.dump_native_solution()
         cls.state_vars = map(lambda x : "s"+str(x) ,  filter (lambda x : x > 0 , DSs.statevar_table.keys()))
         #print cls.state_vars
         cls.minterm_vars = []
