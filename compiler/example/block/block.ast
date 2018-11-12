@@ -2,5 +2,6 @@ invariant (implies (and (and ( match (var (ip4Src)) (ip (10.0.0.1/32)) ) ( match
 invariant (implies (and (and ( match (var (ip4Src)) (ip (10.0.0.2/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.1/32)) )) (not ( bool_expr (block)))) ( assign (var (Port)) (int (1)) ))
 invariant (implies (and (and ( match (var (ip4Src)) (ip (10.0.0.3/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.2/32)) )) (not ( bool_expr (block)))) ( assign (var (Port)) (int (2)) ))
 invariant (implies (and (and ( match (var (ip4Src)) (ip (10.0.0.2/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.3/32)) )) (not ( bool_expr (block)))) ( assign (var (Port)) (int (3)) ))
-reaction (and (and ( match (var (ip4Src)) (ip (10.0.0.1/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.3/32)) )) (not ( bool_expr (block)))) ( bool_expr (block)) (bool (false))
-reaction (and (and ( match (var (ip4Src)) (ip (10.0.0.3/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.1/32)) )) (not ( bool_expr (block)))) ( bool_expr (block)) (bool (false))
+reaction (and ( match (var (ip4Src)) (ip (10.0.0.1/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.3/32)) )) ( bool_expr (block)) (and ( match (var (ip4Src)) (ip (10.0.0.2/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.4/32)) ))
+reaction (and ( match (var (ip4Src)) (ip (10.0.0.2/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.4/32)) )) (not ( bool_expr (block))) (and ( match (var (ip4Src)) (ip (10.0.0.1/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.3/32)) ))
+precedence (and ( match (var (ip4Src)) (ip (10.0.0.1/32)) ) ( match (var (ip4Dst)) (ip (10.0.0.3/32)) )) ( bool_expr (block))

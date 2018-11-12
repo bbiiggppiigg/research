@@ -33,12 +33,27 @@ class MyApp(frenetic.App):
 		if(( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src == "10.0.0.2") )):
 			actions += [SetPort (1)]
 			self.nib.Port = 1
-		elif(( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.2") )):
-			actions += [SetPort (2)]
-			self.nib.Port = 0
+			self.nib.block = False 
+		elif(( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") )):
+			self.nib.block = False 
 		elif(( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src == "10.0.0.2") )):
 			actions += [SetPort (3)]
 			self.nib.Port = 2
+			self.nib.block = False 
+		elif(( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3") )):
+			self.nib.block = False 
+		elif(( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.3") )):
+			self.nib.block = False 
+		elif(( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") )):
+			self.nib.block = False 
+		elif(( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.2") )):
+			self.nib.block = False 
+		elif(( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") )):
+			self.nib.block = False 
+		elif(( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.2") )):
+			actions += [SetPort (2)]
+			self.nib.Port = 0
+			self.nib.block = False 
 		if ((pkt.ip4Dst == "10.0.0.2")):
 			self.nib.ip4Dst = 0
 		elif ((pkt.ip4Dst == "10.0.0.1")):

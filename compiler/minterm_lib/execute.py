@@ -55,11 +55,11 @@ def gen_final(path):
 
 
 def main():
-    example="reaction"
+    #example="reaction"
     #example="liveness"
     #example="block"
     #example="simplest"
-    #example="block"
+    example="block"
     path="example/%s/%s"%(example,example)
     parse_spec(path)
     

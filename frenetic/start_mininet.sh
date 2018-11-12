@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo mn --topo=single,3 --controller=remote
+sudo mn --topo=single,4 --controller=remote

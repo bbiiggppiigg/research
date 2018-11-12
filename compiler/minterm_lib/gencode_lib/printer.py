@@ -4,7 +4,8 @@ from gencode_lib.helper import Helper, ImpossibleCondition
 
 class SolutionTable(object):
     table = dict()
-    terminate = 20
+    terminate = 2000
+    case = 0
     @classmethod
     def insert(cls,stack):
         if(cls.terminate==0):
@@ -30,8 +31,8 @@ class SolutionTable(object):
             #print "impossible condition",e
             return
             
-        #cond_str_list = upin_str + upout_str + pin_str + counter_str
-        cond_str_list = pin_str + counter_str
+        cond_str_list = upin_str + upout_str + pin_str + counter_str
+        #cond_str_list = pin_str + counter_str
         if (len(cond_str_list)==0):
             return
 
@@ -46,6 +47,8 @@ class SolutionTable(object):
             action_str += "\t"*(num_tabs+1)+"self.nib.counter = (self.nib.counter + 1 ) %% %d\n"%DSs.state_counter_max
         if(action_str == ""):
             return
+        action_str += "\t"*(num_tabs+1) + "print \"case\",%d\n"%cls.case
+        cls.case+=1
         superset = None
         for preds in table:
             if preds.issubset(cond_str_set):
@@ -64,7 +67,6 @@ class SolutionTable(object):
        
         if (superset is not None):
             del table[superset]
- 
         table[frozenset(cond_str_set)] = action_str 
         Helper.translate(list(setupin)+list(setupout)+list(setpin)+list(setpout))
    
@@ -91,87 +93,7 @@ class SolutionTable(object):
         return ret
 
 
-class SolutionTable2(object):
-    table = dict()
-
-    @classmethod
-    def insert(cls,stack):
-        
-        primed,unprimed,counter,flags = Helper.split_vars(stack)
-        unprimed_in ,unprimed_out = Helper.split_io(unprimed)
-        primed_in ,primed_out = Helper.split_io(primed)
-        if (primed_out == frozenset()):
-            return 
-        table = cls.table
-        setupin = (unprimed_in)
-        setupout = (unprimed_out)
-        setpin =  (primed_in)
-        setpout =  (primed_out)
-        if( setupin  not in table):
-           cls.table[setupin] = dict() 
-        if( setupout  not in table[setupin]):
-            table[setupin][setupout] = dict()
-        if( setpin  not in table[setupin][setupout]):
-            table[setupin][setupout][setpin] = (setpout,counter,flags) #list()
-        #if (setpout not in table[setupin][setupout][setpin]):
-        #    table[setupin][setupout][setpin].append(setpout)
-    
-"""
-    @classmethod
-    def dump_native_solution(cls):
-        print "dumping solution"
-        isfirst = True
-        ret = ""
-        
-        num_tabs = 2
-        for upin in cls.table:
-            try: 
-                upin_str  =  Helper.interpret_stack(upin)
-                #print len(upin),upin_str
-            except ImpossibleCondition, e:
-                print e
-                continue
-            for upout in cls.table[upin]:
-                try: 
-                    upout_str = Helper.interpret_stack(upout)
-                    #print len(upout),upout_str,upout
-                except ImpossibleCondition, e:
-                    print e
-                    continue
-
-                for pin in cls.table[upin][upout]:
-                    try:
-                        pin_str =  Helper.interpret_stack(pin,True)
-                    except ImpossibleCondition, e:
-                        print e
-                        continue
-                     
-                    pout,counters,flags = cls.table[upin][upout][pin]
-                    counter_str = Helper.get_possible_counter(counters) 
-                    
-                    if(len(upin_str + upout_str + pin_str+counter_str)==0):
-                        continue
-                    predicates = upin_str + upout_str + pin_str + counter_str
-                    if(isfirst):
-                        cond_str = "\t"*num_tabs+"if(%s):\n" % (" and ".join(predicates))
-                    else:
-                        cond_str = "\t"*num_tabs+"elif(%s):\n" % (" and ".join(predicates))
-                     
-                    
-                    
-                    actions = Helper.interpret_actions(pout)
-                    action_str = "".join (map ( lambda action: "\t" *(num_tabs+1) + action+"\n"  , actions))
-                    if( Helper.goal_reached(flags)):
-                        action_str += "\t"*(num_tabs+1)+"self.nib.counter = (self.nib.counter + 1 ) %% %d\n"%DSs.state_counter_max
-                    if(action_str == "" or cond_str ==""):
-                        continue
-                    ret += (cond_str + action_str)
-                    isfirst = False
-                    #ret += "\t"*num_tabs+"ACTIONS !! = %s\n "  % DSs.interpret_actions(pout)
-
-        return ret
-        pass
-"""
+   
 
 class Printer(object):
     @classmethod

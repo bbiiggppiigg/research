@@ -11,10 +11,11 @@ block
 [ENV_TRANS]
 
 [SYS_TRANS]
-( (( (ip4Src = 0) && (ip4Dst = 0) )) -> (Port = 0) )
-( (( (ip4Src = 1) && (ip4Dst = 1) )) -> (Port = 1) )
-( (( (ip4Src = 2) && (ip4Dst = 0) )) -> (Port = 0) )
-( (( (ip4Src = 1) && (ip4Dst = 2) )) -> (Port = 2) )
+( (( (( (ip4Src = 0) && (ip4Dst = 0) )) && (( !(block) )) )) -> (Port = 0) )
+( (( (( (ip4Src = 1) && (ip4Dst = 1) )) && (( !(block) )) )) -> (Port = 1) )
+( (( (( (ip4Src = 2) && (ip4Dst = 0) )) && (( !(block) )) )) -> (Port = 0) )
+( (( (( (ip4Src = 1) && (ip4Dst = 2) )) && (( !(block) )) )) -> (Port = 2) )
+( !(block) )
 [ENV_LIVENESS]
 
 [SYS_LIVENESS]

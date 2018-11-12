@@ -12,25 +12,30 @@ class Invariant:
 class Reaction:
 
     def collect_gr1(self):
-        init =  [self.triggered.negate().gr1_repr()]
-        triggered = self.triggered.gr1_repr()
-        terminate = self.terminate_ast.gr1_repr()
-        policy =self.policy_ast.gr1_repr()
-        trigger = self.trigger_ast.gr1_repr()
+        init =  [self.s.negate().gr1_repr()]
+        s = self.s.gr1_repr()
+        C = self.C.gr1_repr()
+        B = self.B.gr1_repr()
+        A = self.A.gr1_repr()
         trans = [
-                "(%s | (%s & !(%s))) <-> X(%s)"%(trigger,triggered,terminate,triggered),
-                "(%s)->(%s)"%(triggered,policy),
+        "(%s | (%s & (!%s))) <-> X(%s)"%(A,s,C,s),
+        "(%s -> %s)" % (s,B)
+        ]
+        """
+        trans = [
+                "(%s | (%s & (!%s))) <-> X(%s)"%(A,s,C,s),
                 ]
+        """
         return init, trans , []
 
 
-    def __init__(self,trigger_ast,policy_ast,terminate_ast):
+    def __init__(self,A,B,C):
 
-        self.trigger_ast = trigger_ast
-        self.policy_ast = policy_ast
-        self.terminate_ast = terminate_ast
+        self.A = A
+        self.B = B
+        self.C = C
 
-        self.triggered = StateVarTable.create()
+        self.s = StateVarTable.create()
 
 
 

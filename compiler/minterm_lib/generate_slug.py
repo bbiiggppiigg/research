@@ -39,15 +39,18 @@ def collect_gr1(macros):
     ret +="[SYS_INIT]\n"
     for var in Z3VarTable.z3table:
         if not var.is_input:
+
             if var.init_value is not None:
+
                 if var.ast_type == "bool":
+
+                    #print "z3 sysy init", var
                     if var.init_value == "TRUE":
                         ret += "%s\n" % (var.name)
                     else:
                         ret += "!%s\n" % (var.name)
                 else:
                     ret += "%s=%s" % (var.name,var.init_value)
- 
     ret += "\n".join(inits)
     ret += "\n[ENV_TRANS]\n"
     #ret += "CONST_TRUE\n"
@@ -89,7 +92,6 @@ def write_gr1(macros,output_file):
     gr1_code, lives = collect_gr1(macros)
     spec += gr1_code 
     with open (output_file,"w") as f:
-
         f.write(spec)
     return lives
 
@@ -101,6 +103,8 @@ def parse_declaration(filename):
         var_type, var_name = line.strip().split()
         if "=" in var_name:
             var_name, var_value = var_name.split("=")
+            var_name = var_name.strip()
+            var_value = var_value.strip()
             Z3VarTable.insert(var_name,var_type, is_input = False , init_value = var_value )
             #print var_type, var_name , var_value 
         else:
