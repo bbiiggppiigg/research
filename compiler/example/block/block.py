@@ -33,1042 +33,1062 @@ class MyApp(frenetic.App):
 	def packet_in(self,dpid,port_id,payload):
 		pkt = Packet.from_payload(dpid,port_id,payload)
 		actions = []
-		if((( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))):
+		nib=self.nib
+		if (pkt.ip4Dst == "10.0.0.2"):
+			ip4Dst = 0
+		elif (pkt.ip4Dst == "10.0.0.1"):
+			ip4Dst = 1
+		elif (pkt.ip4Dst == "10.0.0.3"):
+			ip4Dst = 2
+		elif (pkt.ip4Dst == "10.0.0.4"):
+			ip4Dst = 3
+		elif (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4"):
+			ip4Dst = 4
+		if (pkt.ip4Src == "10.0.0.1"):
+			ip4Src = 0
+		elif (pkt.ip4Src == "10.0.0.2"):
+			ip4Src = 1
+		elif (pkt.ip4Src == "10.0.0.3"):
+			ip4Src = 2
+		elif (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3"):
+			ip4Src = 3
+
+		if((( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s2 and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and nib.s3)
+			or (( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 0 ) and nib.s3)
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 3 ) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and nib.s3)
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Dst == 4 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Dst == 0 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1))
+			or (( ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and (not nib.block) and (not nib.s1))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and nib.s2 and nib.s3)
+			or (( ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or ((not nib.block) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and (not nib.block) and (not nib.s1))
+			or ((not nib.block) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Dst == 0 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Src == 2 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and nib.s2 and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 4 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Dst == 3 ) and (not nib.block) and ( nib.ip4Src == 1 ) and nib.s3)
+			or ((not nib.block) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1))
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 1 or ip4Src == 3 ) and (not nib.s1) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( ip4Dst == 4 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 4 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1))
+			or (( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( ip4Dst == 3 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and (not nib.block) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and nib.s2 and nib.s3)
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))):
+			nib.s3 = True 
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+		elif((( nib.ip4Dst == 3 ) and ( ip4Src == 1 or ip4Src == 3 ) and (not nib.s2) and nib.block and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 1 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and nib.block and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 1 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 1 ) and (not nib.s2) and nib.s3)):
+			nib.block = False 
+			nib.s1 = False 
+			nib.s3 = True 
+			nib.s2 = True 
+		elif((( ip4Src == 1 or ip4Src == 3 ) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 2 ) and ( nib.ip4Src == 0 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 1 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 0 ) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s2) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.s2) and nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 0 ) and ( ip4Dst == 0 ) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 0 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 0 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.s2) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3)):
+			nib.s3 = True 
+			nib.s2 = False 
+			nib.block = True 
+			nib.s1 = True 
+		elif((( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and nib.s3)):
 			actions += [SetPort (1)]
-			self.nib.Port = 1
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = True 
-			self.nib.s3 = False 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))):
+			nib.Port = 1
+			nib.s3 = True 
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = True 
+		elif((( ip4Src == 0 or ip4Src == 2 ) and nib.s2 and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = True 
-			self.nib.s2 = False 
-			self.nib.s1 = True 
-			self.nib.s3 = True 
-		elif(((not self.nib.s3) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))):
-			actions += [SetPort (3)]
-			self.nib.Port = 2
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = True 
-			self.nib.s3 = False 
-		elif((( self.nib.Port == 0 ) and self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 1 ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 0 or self.nib.Port == 2 ))
-			or ((not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 4 ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))):
+			nib.Port = 0
+			nib.s3 = True 
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+		elif((( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 1 ) and (not nib.s3) and ( ip4Dst == 0 ))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = False 
-		elif(((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or ((not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or ((not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or (self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ))
-			or ((not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))):
+			nib.Port = 0
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = True 
+			nib.s3 = False 
+		elif((( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s2))
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s2))
+			or (( nib.Port == 0 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and (not nib.s2) and nib.block and ( nib.ip4Dst == 4 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = True 
-			self.nib.s3 = True 
-			self.nib.s1 = False 
-			self.nib.s2 = False 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3)):
+			nib.Port = 0
+			nib.s3 = True 
+			nib.s1 = True 
+			nib.block = True 
+			nib.s2 = False 
+		elif((nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and nib.block and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 4 ) and (not nib.s1) and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 1 ) and (not nib.s2) and nib.s3)
+			or ((not nib.s1) and ( nib.Port == 0 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.block and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.block and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.s1 = False 
-			self.nib.block = True 
-			self.nib.s2 = False 
-			self.nib.s3 = True 
-		elif(((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and ( (pkt.ip4Dst == "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.Port == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))):
-			self.nib.s2 = False 
-			self.nib.s3 = False 
-			self.nib.block = False 
-			self.nib.s1 = False 
-		elif(((not self.nib.s3) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))):
+			nib.Port = 0
+			nib.block = True 
+			nib.s1 = False 
+			nib.s2 = False 
+			nib.s3 = True 
+		elif((( nib.ip4Dst == 2 ) and nib.block and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and ( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.block and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s2))
+			or (nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.block and nib.s1 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( nib.ip4Dst == 4 ) and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 1 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( nib.Port == 0 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = True 
-			self.nib.s3 = False 
-		elif((( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1))
-			or ((not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and ( self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or (self.nib.s3 and ( self.nib.Port == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ))
-			or ((not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3)
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and (not self.nib.s1) and (not self.nib.s2) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and ( self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.s2))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and (not self.nib.s1) and (not self.nib.s2) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))):
-			self.nib.s2 = False 
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s1 = False 
-		elif(((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))):
+			nib.Port = 0
+			nib.block = True 
+			nib.s3 = True 
+			nib.s2 = False 
+			nib.s1 = True 
+		elif((( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = False 
-			self.nib.s3 = False 
-		elif(((not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 1 ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))):
+			nib.Port = 0
+			nib.s3 = True 
+			nib.block = True 
+			nib.s1 = False 
+			nib.s2 = False 
+		elif((( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.s3 = True 
-			self.nib.s1 = False 
-			self.nib.block = False 
-			self.nib.s2 = False 
-		elif(((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))):
+			nib.Port = 0
+			nib.s3 = True 
+			nib.s1 = False 
+			nib.block = False 
+			nib.s2 = False 
+		elif((nib.block and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-			self.nib.s3 = False 
-		elif((( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))):
-			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-		elif((( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3)
-			or ((not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))):
-			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.s3 = True 
-			self.nib.block = True 
-			self.nib.s1 = False 
-			self.nib.s2 = False 
-		elif(((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and ( (pkt.ip4Dst == "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ))):
-			actions += [SetPort (3)]
-			self.nib.Port = 2
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = False 
-			self.nib.s3 = False 
-		elif((( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))):
-			actions += [SetPort (3)]
-			self.nib.Port = 2
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = True 
-		elif((( self.nib.ip4Dst == 0 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or ((not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)):
-			actions += [SetPort (3)]
-			self.nib.Port = 2
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and self.nib.s2)
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))):
+			nib.Port = 0
+			nib.block = True 
+			nib.s2 = False 
+			nib.s1 = True 
+			nib.s3 = True 
+		elif((( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1))
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 1 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1))
+			or (( nib.ip4Dst == 4 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and nib.s2 and nib.s3)):
 			actions += [SetPort (1)]
-			self.nib.Port = 1
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-		elif((( self.nib.ip4Dst == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ))
-			or (( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ))
-			or ((not self.nib.block) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ) and ( self.nib.ip4Dst == 2 ))
-			or ((not self.nib.block) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ) and ( self.nib.ip4Dst == 2 ))
-			or (( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 0 ) and ( (pkt.ip4Dst == "10.0.0.2") ))):
-			self.nib.s1 = True 
-			self.nib.s2 = False 
-			self.nib.block = True 
-			self.nib.s3 = True 
-		elif((self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and self.nib.block and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 3 ))
-			or (self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 3 ))):
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s3 = True 
-			self.nib.s2 = True 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.block and self.nib.s3)
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))):
+			nib.Port = 1
+			nib.s3 = True 
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+		elif((nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or ((not nib.s1) and nib.block and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.block and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and ( nib.Port == 3 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.s3 and ( nib.ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s3 and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.block and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s3 and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.block and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (nib.block and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and ( nib.ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 4 ) and nib.block and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s3 and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (nib.block and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.s2) and ( nib.ip4Dst == 4 ) and nib.block and (not nib.s1) and ( ip4Dst == 0 ) and nib.s3)
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Dst == 4 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or ((not nib.s1) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Dst == 4 ) and ( ip4Dst == 1 ) and nib.block and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and nib.block and ( ip4Dst == 4 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (nib.block and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 3 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and nib.block and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 2 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.block and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 4 ) and nib.block and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and nib.block and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (nib.block and ( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and ( ip4Dst == 3 ) and nib.block and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s3 and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and ( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and ( ip4Dst == 3 ) and nib.block and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 4 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (nib.block and ( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.block and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or ((not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 3 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and ( ip4Src == 3 ) and ( nib.ip4Dst == 4 ) and ( ip4Dst == 1 ) and nib.block and (not nib.s2) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))):
+			nib.s1 = False 
+			nib.s3 = True 
+			nib.s2 = False 
+			nib.block = False 
+		elif((nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = True 
-			self.nib.s1 = False 
-			self.nib.s2 = False 
-			self.nib.s3 = True 
-		elif((( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 ) and (not self.nib.s2))
-			or (self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 0 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 0 ) and (not self.nib.s2))
-			or (self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 0 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 0 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 ) and (not self.nib.s2))
-			or (self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 0 ) and (not self.nib.s2))):
-			self.nib.s3 = True 
-			self.nib.s2 = False 
-			self.nib.block = True 
-			self.nib.s1 = True 
-		elif(((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and (not self.nib.block) and ( self.nib.ip4Src == 1 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or ((not self.nib.s3) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and ( self.nib.Port == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s2)
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and self.nib.s2 and (not self.nib.block) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s3) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s3) and ( self.nib.ip4Src == 1 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ))
-			or ((not self.nib.s3) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2)
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))):
-			self.nib.s3 = False 
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s1 and self.nib.s3 and self.nib.block)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.2") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))):
+			nib.Port = 0
+			nib.block = True 
+			nib.s1 = True 
+			nib.s3 = True 
+			nib.s2 = False 
+		elif((( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Dst == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and (not nib.s2) and (not nib.block) and (not nib.s1) and (not nib.s3) and ( ip4Dst == 0 ) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Dst == 0 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = True 
-			self.nib.s3 = True 
-			self.nib.s2 = False 
-			self.nib.s1 = True 
-		elif(((not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2)
-			or ((not self.nib.s3) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2)
-			or ((not self.nib.s3) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 4 ) and (not self.nib.s3) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or ((not self.nib.s3) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or ((not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))):
+			nib.Port = 0
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = False 
+			nib.s3 = False 
+		elif((( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ))
+			or ((not nib.block) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or ((not nib.block) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.s2) and (not nib.block) and (not nib.s1) and (not nib.s3) and ( ip4Dst == 0 ) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Src == 2 ) and ( ip4Dst == 3 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 3 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or ((not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or ((not nib.block) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))):
+			nib.s2 = False 
+			nib.s3 = False 
+			nib.block = False 
+			nib.s1 = False 
+		elif((( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and nib.s2 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3))):
+			actions += [SetPort (1)]
+			nib.Port = 1
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+			nib.s3 = False 
+		elif((nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 4 ) and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or ((not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 4 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and nib.block and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))):
+			actions += [SetPort (2)]
+			nib.Port = 0
+			nib.block = True 
+			nib.s3 = True 
+			nib.s1 = False 
+			nib.s2 = False 
+		elif((( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( ip4Src == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 1 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))):
 			actions += [SetPort (3)]
-			self.nib.Port = 2
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-			self.nib.s3 = False 
-		elif((( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1)):
+			nib.Port = 2
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+			nib.s3 = False 
+		elif((( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 3 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.block) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or ((not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 4 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = True 
-			self.nib.s1 = True 
-			self.nib.s3 = True 
-			self.nib.s2 = False 
-		elif((self.nib.block and (not self.nib.s2) and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))
-			or (( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))):
+			nib.Port = 0
+			nib.s1 = False 
+			nib.block = True 
+			nib.s2 = False 
+			nib.s3 = True 
+		elif((( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.s2) and nib.block and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3)):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = True 
-		elif((( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and self.nib.s2)
-			or ((not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 0 ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and (not self.nib.s1))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and self.nib.s2)
-			or ((not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ))
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and (not self.nib.block) and ( self.nib.ip4Src == 1 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (self.nib.s3 and ( self.nib.Port == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s3 and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (self.nib.s3 and (not self.nib.block) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))):
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-		elif((( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s1 and self.nib.s3 and self.nib.block)
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.2") ))
-			or (self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") ) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( (pkt.ip4Src == "10.0.0.2") ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src == "10.0.0.2") ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)):
-			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.block = True 
-			self.nib.s3 = True 
-			self.nib.s1 = True 
-			self.nib.s2 = False 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Src == 1 ) and self.nib.s3 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))):
+			nib.Port = 0
+			nib.s3 = True 
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = True 
+		elif((( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and (not nib.block) and (not nib.s1) and (not nib.s3) and ( ip4Dst == 0 ) and ( nib.ip4Dst == 4 ))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s2 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and nib.s2 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Dst == 0 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or ((not nib.block) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Src == 2 ) and ( ip4Dst == 3 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 1 or ip4Src == 3 ) and (not nib.s1) and (not nib.block) and ( nib.ip4Src == 1 ) and (not nib.s3) and ( ip4Dst == 0 ))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 3 ) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and (not nib.s3))
+			or ((not nib.block) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Dst == 0 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and (not nib.s3))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( ip4Src == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( ip4Dst == 4 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Dst == 3 ) and (not nib.block) and ( nib.ip4Src == 1 ) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and ( nib.Port == 0 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Src == 2 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s2 and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and (not nib.block) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and (not nib.s3))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s2 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and nib.s2)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Dst == 0 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s3) and nib.s2)
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or ((not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s3) and nib.s2 and ( nib.ip4Dst == 4 ))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s2 and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s2 and (not nib.s3))
+			or ((not nib.block) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 3 ) and nib.s2 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s2 and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s2 and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s2 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3))):
+			nib.s3 = False 
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+		elif((( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Dst == 3 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3 and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 3 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.s2) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s3 and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s3 and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or ((not nib.block) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or ((not nib.block) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and (not nib.block) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 4 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or ((not nib.block) and ( nib.ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s3 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Dst == 4 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 4 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( ip4Dst == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( nib.ip4Src == 3 ) and (not nib.block) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 3 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and (not nib.s1) and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s2))):
+			nib.s2 = False 
+			nib.s3 = True 
+			nib.block = False 
+			nib.s1 = False 
+		elif((( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 2 ) and ( ip4Src == 1 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and (not nib.s3) and (not nib.s2))):
+			actions += [SetPort (3)]
+			nib.Port = 2
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = False 
+			nib.s3 = False 
+		elif((( nib.ip4Src == 3 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2) and ( nib.ip4Dst == 4 ))
+			or ((not nib.block) and ( nib.ip4Dst == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and (not nib.s1) and (not nib.s3) and (not nib.s2))):
 			actions += [SetPort (1)]
-			self.nib.Port = 1
-			self.nib.s3 = True 
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = True 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))):
-			actions += [SetPort (1)]
-			self.nib.Port = 1
-			self.nib.block = False 
-			self.nib.s1 = False 
-			self.nib.s2 = False 
-			self.nib.s3 = False 
-		elif((( self.nib.ip4Dst == 4 ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.block and self.nib.s3)
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or ((not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 0 or self.nib.Port == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 0 ) and self.nib.s3 and (not self.nib.s1) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (self.nib.block and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and self.nib.s3 and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and self.nib.s3 and (not self.nib.s1) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s3 and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (self.nib.s3 and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3)
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 2 ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.block and (not self.nib.s1))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s1))
-			or (self.nib.s3 and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and self.nib.s3 and self.nib.block and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 2 ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.block and self.nib.s3)
-			or ((not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and (not self.nib.s1))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and (not self.nib.s1))
-			or ((not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 0 or self.nib.Port == 2 ))
-			or (self.nib.s3 and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3)
-			or (self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.block and self.nib.s3)
-			or (( self.nib.Port == 0 ) and self.nib.s3 and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or ((not self.nib.s2) and ( self.nib.Port == 3 ) and (not self.nib.s1) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or ((not self.nib.s2) and (not self.nib.s1) and ( self.nib.ip4Dst == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.Port == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.s1) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and (not self.nib.s1) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( (pkt.ip4Dst == "10.0.0.4") ) and (not self.nib.s1) and self.nib.block and self.nib.s3 and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))):
-			self.nib.s1 = False 
-			self.nib.s3 = True 
-			self.nib.s2 = False 
-			self.nib.block = False 
-		elif((( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2 and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s2 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 ) and self.nib.s2 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 3 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Dst == 0 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s2)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.Port == 2 ) and ( self.nib.ip4Src == 1 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and self.nib.s2 and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s3) and ( self.nib.ip4Src == 3 ) and (not self.nib.block) and ( (pkt.ip4Src == "10.0.0.2") ) and (not self.nib.s1) and ( self.nib.ip4Dst == 2 ) and self.nib.s2)):
-			actions += [SetPort (1)]
-			self.nib.Port = 1
-			self.nib.block = False 
-			self.nib.s2 = True 
-			self.nib.s1 = False 
-			self.nib.s3 = False 
-		elif((( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s1 and self.nib.s3 and self.nib.block and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 1 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))):
+			nib.Port = 1
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = False 
+			nib.s3 = False 
+		elif((( nib.ip4Dst == 2 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.s2) and nib.block and ( nib.ip4Dst == 4 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 1 or ip4Src == 3 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and nib.block and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.block and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and nib.s3 and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Dst == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.Port == 0 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 3 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 1 or ip4Src == 3 ) and ( nib.Port == 3 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( nib.Port == 2 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and nib.block and ( ip4Dst == 4 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 4 ) and nib.block and ( ip4Dst == 1 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and nib.block and ( ip4Dst == 4 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( ip4Dst == 4 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s1 and nib.s3 and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.s1 and nib.s3 and ( nib.ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 2 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and (not nib.s2))
+			or (nib.block and ( ip4Dst == 4 ) and ( nib.ip4Dst == 4 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.block and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and (not nib.s2) and ( ip4Dst == 3 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and (not nib.s2) and ( ip4Dst == 3 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3)
+			or (( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 4 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and nib.block and nib.s1 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (nib.block and ( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 4 ) and ( ip4Dst == 2 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( ip4Dst == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and (not nib.s2))
+			or (nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.block and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.Port == 0 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 3 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and nib.block and ( nib.ip4Dst == 4 ) and ( ip4Dst == 2 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.Port == 0 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s1 and nib.s3 and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and ( ip4Dst == 4 ) and ( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.Port == 0 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( ip4Dst == 4 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (nib.block and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and (not nib.s2))
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s2))
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Dst == 4 ) and nib.block and ( ip4Dst == 1 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and nib.block and (not nib.s2))
+			or (nib.s1 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s2))
+			or (( ip4Dst == 3 ) and ( nib.Port == 0 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and nib.block and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and ( ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.Port == 0 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( ip4Dst == 4 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and nib.block and (not nib.s2))
+			or (( ip4Src == 3 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s2))
+			or (nib.block and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and nib.s1 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 4 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( nib.ip4Dst == 3 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.Port == 2 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( ip4Src == 3 ) and ( nib.ip4Dst == 2 ) and nib.s1 and nib.s3 and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and nib.block and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 3 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( nib.Port == 3 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Src == 3 ) and nib.block and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and ( nib.ip4Src == 3 ) and (not nib.s2))
+			or (( ip4Src == 1 or ip4Src == 3 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 1 or ip4Src == 3 ) and nib.block and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 4 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and nib.block and ( nib.Port == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 2 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.block and ( ip4Src == 3 ) and ( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.block and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (nib.block and ( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s2))
+			or (( ip4Dst == 3 ) and nib.block and ( nib.ip4Dst == 4 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.ip4Dst == 1 ) and nib.block and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and (not nib.s2))):
+			nib.s2 = False 
+			nib.s3 = True 
+			nib.block = True 
+			nib.s1 = True 
+		elif((( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s3))
+			or (nib.s2 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))
+			or (( ip4Src == 0 or ip4Src == 2 ) and nib.s2 and (not nib.block) and (not nib.s1) and (not nib.s3) and ( ip4Dst == 0 ) and ( nib.ip4Dst == 4 ))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s3))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s3))):
 			actions += [SetPort (2)]
-			self.nib.Port = 0
-			self.nib.s3 = True 
-			self.nib.s1 = True 
-			self.nib.block = True 
-			self.nib.s2 = False 
-		elif((( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1)
-			or ((not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 2 ))
-			or (( self.nib.ip4Dst == 4 ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s1 and self.nib.s3 and self.nib.block)
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2) and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1)
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1)
-			or (self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1)
-			or (self.nib.s3 and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (self.nib.block and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1 and ( self.nib.ip4Src == 2 ) and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s1 and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (self.nib.s3 and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1 and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and (not self.nib.s2) and self.nib.s3)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (self.nib.block and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1 and (not self.nib.s2) and self.nib.s3)
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 0 ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Dst == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and self.nib.s1 and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (( self.nib.Port == 1 or self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1 and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and (not self.nib.s2))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s1 and self.nib.s3 and self.nib.block)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( (pkt.ip4Dst == "10.0.0.2") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 2 ) and self.nib.s3)
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.s1 and self.nib.s3 and self.nib.block and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.s3 and ( self.nib.ip4Src == 3 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1 and ( self.nib.ip4Dst == 1 ) and self.nib.s3)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1)
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s3 and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ))
-			or ((not self.nib.s2) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.ip4Src == 2 ))
-			or (self.nib.s3 and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (self.nib.s3 and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1 and ( self.nib.ip4Dst == 3 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s1 and self.nib.s3 and self.nib.block and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.s1 and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.ip4Dst == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and self.nib.block)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 1 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.s3 and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.Port == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.Port == 2 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( self.nib.ip4Src == 1 or self.nib.ip4Src == 3 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.s1 and self.nib.block)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1)
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 1 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 2 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s3 and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.Port == 0 or self.nib.Port == 2 ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( (pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4") ) and self.nib.block and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s3 and self.nib.s1 and ( self.nib.ip4Dst == 3 ))
-			or (( self.nib.ip4Dst == 4 ) and ( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and (not self.nib.s2) and self.nib.s3 and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and (not self.nib.s2) and ( self.nib.ip4Src == 1 ) and ( self.nib.Port == 3 ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and ( self.nib.ip4Dst == 3 ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1)
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1)
-			or (self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.4") ) and ( self.nib.Port == 2 ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or (( (pkt.ip4Dst == "10.0.0.1") ) and ( (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and self.nib.s3 and self.nib.block and ( self.nib.Port == 1 or self.nib.Port == 3 ) and self.nib.s1)
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and self.nib.s3 and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and self.nib.s3 and ( (pkt.ip4Dst == "10.0.0.2") ) and self.nib.block and ( self.nib.ip4Dst == 2 ) and ( (pkt.ip4Src == "10.0.0.2") or (pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3") ) and self.nib.s1 and ( self.nib.ip4Src == 1 ) and (not self.nib.s2))
-			or ((not self.nib.s2) and ( self.nib.ip4Src == 3 ) and ( (pkt.ip4Dst == "10.0.0.3") ) and self.nib.block and self.nib.s3 and self.nib.s1 and ( (pkt.ip4Src == "10.0.0.1") or (pkt.ip4Src == "10.0.0.3") ) and ( self.nib.ip4Dst == 1 ))
-			or (( self.nib.Port == 0 ) and ( self.nib.ip4Dst == 0 ) and (not self.nib.s2) and ( self.nib.ip4Src == 0 or self.nib.ip4Src == 2 ) and ( (pkt.ip4Dst == "10.0.0.4") ) and self.nib.block and self.nib.s3 and self.nib.s1)):
-			self.nib.s2 = False 
-			self.nib.s3 = True 
-			self.nib.block = True 
-			self.nib.s1 = True 
+			nib.Port = 0
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+			nib.s3 = False 
+		elif((( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 4 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ) and nib.s2 and nib.s3)
+			or (( nib.ip4Dst == 2 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.ip4Dst == 1 ) and nib.s2 and nib.s3 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s2 and nib.s3 and ( ip4Src == 1 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (nib.s2 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 2 ))):
+			actions += [SetPort (3)]
+			nib.Port = 2
+			nib.s3 = True 
+			nib.block = False 
+			nib.s2 = True 
+			nib.s1 = False 
+		elif(((not nib.block) and ( nib.ip4Src == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 2 ) and (not nib.s1))
+			or (( nib.ip4Src == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and ( ip4Dst == 0 ))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 0 ) and (not nib.s1) and ( ip4Dst == 4 ) and (not nib.block))
+			or (( nib.ip4Src == 0 ) and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and ( ip4Dst == 2 ))
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and ( nib.ip4Src == 0 ) and ( ip4Dst == 0 ))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 0 ) and (not nib.s1) and ( ip4Dst == 3 ) and (not nib.block))
+			or (( ip4Src == 1 or ip4Src == 3 ) and (not nib.block) and ( nib.ip4Dst == 2 ) and (not nib.s1) and ( ip4Dst == 2 ) and ( nib.ip4Src == 0 ))
+			or ((not nib.block) and ( ip4Src == 1 or ip4Src == 3 ) and ( ip4Dst == 1 ) and ( nib.ip4Dst == 2 ) and (not nib.s1) and ( nib.ip4Src == 0 ))):
+			nib.s1 = True 
+			nib.s2 = False 
+			nib.block = True 
+			nib.s3 = True 
+		elif(((not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Dst == 0 ) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 0 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( nib.ip4Src == 3 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( ip4Dst == 0 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.Port == 2 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 0 ) and ( nib.Port == 0 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and ( nib.Port == 0 or nib.Port == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and (not nib.s2) and ( nib.ip4Dst == 4 ) and nib.block and (not nib.s1) and ( ip4Dst == 0 ) and nib.s3)
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.Port == 1 or nib.Port == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and ( ip4Dst == 0 ) and (not nib.block) and (not nib.s1) and (not nib.s2))
+			or (( nib.Port == 0 ) and ( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and (not nib.s1) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and (not nib.block) and ( nib.ip4Src == 3 ) and (not nib.s1) and (not nib.s2))
+			or (( ip4Src == 0 or ip4Src == 2 ) and (not nib.s2) and ( nib.ip4Dst == 4 ) and (not nib.block) and (not nib.s1) and ( ip4Dst == 0 ) and nib.s3)
+			or ((not nib.s1) and ( nib.ip4Src == 1 or nib.ip4Src == 3 ) and ( ip4Dst == 0 ) and nib.s3 and ( ip4Src == 0 or ip4Src == 2 ) and nib.block and ( nib.ip4Dst == 0 ) and (not nib.s2))):
+			actions += [SetPort (2)]
+			nib.Port = 0
+			nib.s3 = True 
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = False 
+		elif((( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and nib.s3)
+			or (( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and (not nib.s2) and nib.s3)):
+			actions += [SetPort (3)]
+			nib.Port = 2
+			nib.s3 = True 
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = True 
+		elif((( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and ( ip4Dst == 2 ) and (not nib.s3))):
+			actions += [SetPort (3)]
+			nib.Port = 2
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = True 
+			nib.s3 = False 
+		elif((( nib.ip4Dst == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.s1 and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.ip4Src == 3 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 1 ) and ( nib.ip4Dst == 1 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( ip4Src == 1 ) and nib.block and ( nib.ip4Dst == 4 ) and ( ip4Dst == 2 ) and nib.s1 and (not nib.s2) and nib.s3)
+			or (( nib.ip4Src == 2 ) and ( nib.ip4Dst == 2 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Src == 1 or nib.ip4Src == 3 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 1 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( nib.ip4Dst == 3 ) and ( ip4Src == 1 ) and nib.block and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.Port == 0 ) and nib.s1 and ( nib.ip4Src == 0 or nib.ip4Src == 2 ) and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.ip4Dst == 0 ) and ( ip4Dst == 2 ) and (not nib.s2))
+			or (( nib.ip4Dst == 2 ) and ( nib.ip4Src == 1 ) and nib.s1 and nib.s3 and ( ip4Src == 1 ) and nib.block and ( nib.Port == 2 ) and ( ip4Dst == 2 ) and (not nib.s2))):
+			actions += [SetPort (2)]
+			nib.Port = 0
+			nib.block = True 
+			nib.s3 = True 
+			nib.s1 = True 
+			nib.s2 = False 
+		elif((( nib.ip4Dst == 3 ) and (not nib.s1) and ( ip4Src == 1 ) and ( ip4Dst == 1 ) and (not nib.block) and ( nib.ip4Src == 1 ) and (not nib.s3))):
+			actions += [SetPort (1)]
+			nib.Port = 1
+			nib.block = False 
+			nib.s1 = False 
+			nib.s2 = True 
+			nib.s3 = False 
 		if ((pkt.ip4Dst == "10.0.0.2")):
-			self.nib.ip4Dst = 0
+			nib.ip4Dst = 0
 		elif ((pkt.ip4Dst == "10.0.0.1")):
-			self.nib.ip4Dst = 1
+			nib.ip4Dst = 1
 		elif ((pkt.ip4Dst == "10.0.0.3")):
-			self.nib.ip4Dst = 2
+			nib.ip4Dst = 2
 		elif ((pkt.ip4Dst == "10.0.0.4")):
-			self.nib.ip4Dst = 3
+			nib.ip4Dst = 3
 		elif ((pkt.ip4Dst != "10.0.0.2" and pkt.ip4Dst != "10.0.0.1" and pkt.ip4Dst != "10.0.0.3" and pkt.ip4Dst != "10.0.0.4")):
-			self.nib.ip4Dst = 4
+			nib.ip4Dst = 4
 		if ((pkt.ip4Src == "10.0.0.1")):
-			self.nib.ip4Src = 0
+			nib.ip4Src = 0
 		elif ((pkt.ip4Src == "10.0.0.2")):
-			self.nib.ip4Src = 1
+			nib.ip4Src = 1
 		elif ((pkt.ip4Src == "10.0.0.3")):
-			self.nib.ip4Src = 2
+			nib.ip4Src = 2
 		elif ((pkt.ip4Src != "10.0.0.1" and pkt.ip4Src != "10.0.0.2" and pkt.ip4Src != "10.0.0.3")):
-			self.nib.ip4Src = 3
+			nib.ip4Src = 3
 		print pkt
 		print actions
 		self.pkt_out( dpid, payload , actions) 

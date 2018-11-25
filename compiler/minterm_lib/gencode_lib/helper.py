@@ -5,6 +5,34 @@ class ImpossibleCondition(Exception):
 
 class Helper:
     @classmethod
+    def get_prologue(cls):
+        table = DSs.minterm_table.table
+        ret = { k : v for k,v in table.iteritems() if k.is_input } 
+        ret_str = "\t\tnib=self.nib\n"
+        for var,plist in ret.iteritems():
+            is_first = True
+            for enc , rep in enumerate(plist):
+                if (is_first):
+                    cond_str =  "\t\tif %s:\n" % rep.fr_predicate(True)
+                else:
+                    cond_str =  "\t\telif %s:\n" %rep.fr_predicate(True)
+                action_str = "\t\t\t%s = %d\n"%(var,enc)
+                is_first= False
+                ret_str += (cond_str+action_str)
+
+
+        """
+        for var,plist in table.iteritems():
+            if( not var.is_input):
+                continue
+            ret[var] = list()
+            for encoding, rep in enumerate(plist):
+                print (rep.fr_predicate(True),"%s = %d"%(var,encoding))
+                ret.append( (rep.fr_predicate(True),"%s = %d"%(var,encoding)))
+                    #print var,encoding,rep.fr_predicate(True)
+        """
+        return ret_str
+    @classmethod
     def translate(cls,indices):
         ints,others = cls.split_int(indices)
         #print map (lambda x : ( "~" if get_sign(x)[0] < 0 else "")+DSs.names[x] , others)
@@ -37,7 +65,7 @@ class Helper:
         ret = filter ( lambda x : x < DSs.state_counter_max, ret) 
         if ret == []:
             return []
-        ret  = map (lambda x : "(self.nib.counter == %d)" % x, ret)
+        ret  = map (lambda x : "(nib.counter == %d)" % x, ret)
         ret = " or ".join(ret)
         #print ret
         return [ret]
@@ -69,7 +97,10 @@ class Helper:
     @classmethod
     def get_minterm_string(cls,var_name,bit_map,is_prime= False):
         minterms = cls.get_possible_minterms(var_name,bit_map)
-        ret = map(lambda x : x.fr_predicate(is_prime), minterms)
+        if( is_prime ):
+            ret = map(lambda x : x.fr_encoding(), minterms)
+        else:
+            ret = map(lambda x : x.fr_predicate(is_prime), minterms)
         ret = filter(lambda x : x != "" , ret)
         if (ret == []):
             return ""
@@ -158,9 +189,9 @@ class Helper:
             sign,value = get_sign(index)
             var_name = DSs.label_map[DSs.graph[value][1]]
             if(sign >0):
-                ret.append( "self.nib.%s = True " % var_name[:-1])
+                ret.append( "nib.%s = True " % var_name[:-1])
             else:
-                ret.append( "self.nib.%s = False "%var_name[:-1])
+                ret.append( "nib.%s = False "%var_name[:-1])
 
         return ret
     """
@@ -187,9 +218,9 @@ class Helper:
             sign,value = get_sign(index)
             var_name = DSs.names[index]
             if(sign >0):
-                ret.append( "self.nib.%s" % var_name)
+                ret.append( "nib.%s" % var_name)
             else:
-                ret.append("(not self.nib.%s)"%var_name)
+                ret.append("(not nib.%s)"%var_name)
 
         return ret+ret_ints
         pass

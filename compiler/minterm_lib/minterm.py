@@ -78,13 +78,18 @@ class Minterm(object):
         return " && ".join( map( lambda x : x.__repr__() , self.pred_list))
     def gr1_repr(self):
         return "%s = %d"%(self.var,self.id)
-    
+    def fr_encoding(self):
+        #if (isprime):
+        return "%s == %d"%(self.var.name,self.id)
+        assert(False)
+        #return "self.nib.%s%d"%(self.var.name,self.id)
+
     def fr_predicate(self,isprime = False):
         # TODO DEBUG
         if(DEBUG):
             if (isprime):
                 return "%s%d"%(self.var.name,self.id)
-            return "self.nib.%s%d"%(self.var.name,self.id)
+            return "nib.%s%d"%(self.var.name,self.id)
             
         if ( isprime) :
             if( self.var.name in self.builtin_predicate):
@@ -97,13 +102,13 @@ class Minterm(object):
                 #return "self.nib.%s%d"%(self.var.name,self.id)
                 pass
         else:
-            return "self.nib.%s == %d"%(self.var.name,self.id)
+            return "nib.%s == %d"%(self.var.name,self.id)
 
     def fr_action_update(self):
-        return "self.nib.%s = %d" % (self.var.name,self.id)
+        return "nib.%s = %d" % (self.var.name,self.id)
     
     def fr_update(self):
-        return "self.nib.%s = %s" % (self.var.name,self.z3value)
+        return "nib.%s = %s" % (self.var.name,self.z3value)
     
     def fr_action(self):
         name = self.var.name
@@ -114,7 +119,7 @@ class Minterm(object):
             if(DEBUG):
                 action =  self.builtin_action[name]%(self.id) #TODO DEBUG
             return "actions += [%s]"%action
-        return "self.nib.%s = %s " % ( name ,value)
+        return "nib.%s = %s " % ( name ,value)
 
     pass
 

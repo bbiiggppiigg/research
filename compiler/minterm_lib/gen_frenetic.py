@@ -3,6 +3,7 @@ import sys
 from gencode_lib.parser import parse_strategy
 from gencode_lib.tables import DSs
 from gencode_lib.printer import Printer, SolutionTable
+from gencode_lib.helper import Helper
 
 get_sign = lambda x : (1,x) if x > 0 else (-1,-x) if x < 0 else (0,0)
 
@@ -41,7 +42,7 @@ def gen_frenetic(db,strategy,code):
     
     DSs.setup(db,graph,label_map)   
     dfs(rootid,1,[])
-    
+    #print Helper.get_prologue()
     Printer.print_code(code)
     return True
     #print print_nibupdate(label_map,fake_table(),1)

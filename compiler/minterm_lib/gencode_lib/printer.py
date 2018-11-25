@@ -68,7 +68,7 @@ class SolutionTable(object):
         if (superset is not None):
             del table[superset]
         table[frozenset(cond_str_set)] = action_str 
-        Helper.translate(list(setupin)+list(setupout)+list(setpin)+list(setpout))
+        #Helper.translate(list(setupin)+list(setupout)+list(setpin)+list(setpout))
    
         cls.terminate = cls.terminate - 1
     @classmethod
@@ -186,6 +186,7 @@ def get_def_str():
     ret += "\tdef packet_in(self,dpid,port_id,payload):\n"
     ret += "\t\tpkt = Packet.from_payload(dpid,port_id,payload)\n"
     ret += "\t\tactions = []\n"
+    ret += Helper.get_prologue()+"\n"
     return ret
 
 def get_pktout_str(numtabs):
